@@ -17,6 +17,16 @@ module.exports = {
       );
     });
   },
+  checkOrderInvoice: (order_invoice) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        `SELECT COUNT(order_invoice) AS totalInvoice FROM order_cart WHERE order_invoice='${order_invoice}'`,
+        (error, result) => {
+          !error ? resolve(result[0].totalInvoice) : reject(new Error(error));
+        }
+      );
+    });
+  },
   postOrderHistory: (setDataOrderHistory) => {
     return new Promise((resolve, reject) => {
       connection.query(
@@ -40,10 +50,9 @@ module.exports = {
   getPrice: (product_id) => {
     return new Promise((resolve, reject) => {
       connection.query(
-        "SELECT product_price FROM product WHERE product_id = ?",
-        product_id,
+        `SELECT product_price FROM product WHERE product_id = ${product_id}`,
         (error, result) => {
-          console.log(result);
+          console.log(error);
           !error ? resolve(result) : reject(new Error(error));
         }
       );

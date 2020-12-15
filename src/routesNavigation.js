@@ -7,6 +7,6 @@ const order = require("./routes/orderCartRoutes");
 router.use("/product", product);
 router.use("/category", category);
 router.use("/promo", promo);
-router.use("/orderhistory", order);
+router.use("/order", order);
 
 module.exports = router;

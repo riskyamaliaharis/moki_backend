@@ -1,9 +1,8 @@
-require("dotenv").config();
 const express = require("express");
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-
+require("dotenv").config();
 const routesNavigation = require("./src/routesNavigation");
 
 const app = express();
@@ -20,6 +19,8 @@ app.use((request, response, next) => {
   );
   next();
 });
+
+// let port = process.env.port || 5000;
 
 app.use("/", routesNavigation);
 

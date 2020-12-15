@@ -6,13 +6,18 @@ const connection = mysql.createConnection({
   database: "moki_food_beverage",
   timezone: "UTC",
 });
+// let host = process.env.DB_HOST;
+// let user = process.env.DB_USER;
+// let pass = process.env.DB_PASS;
+// let db = process.env.DB_NAME;
+// let timezone = process.env.DB_TIMEZONE;
 
 // const connection = mysql.createConnection({
-//   host: process.env.DB_HOST,
-//   username: process.env.DB_USER,
-//   password: process.env.DB_PASS,
-//   database: "moki_food_beverage",
-//   timezone: "UTC",
+//   host: host,
+//   username: user,
+//   password: pass,
+//   database: db,
+//   timezone: timezone,
 // });
 
 connection.connect((error) => {

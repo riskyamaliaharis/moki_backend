@@ -1,11 +1,10 @@
 const {
   postOrder,
-  getPrice,
   postOrderHistory,
   getHistoryByIdModel,
   deleteHistoryModel,
-  //   countSubtotal,
-  //   updateSubtotal,
+  checkOrderInvoice,
+  getPrice,
 } = require("../model/orderCartModel");
 
 const helper = require("../helper/response");
@@ -14,39 +13,45 @@ const helper = require("../helper/response");
 module.exports = {
   createOrder: async (req, res) => {
     try {
-      const {
-        order_invoice,
-        subtotal,
-        status,
-        user_id,
-        product_id,
-        qty,
-      } = req.body;
-      const setDataOrder = {
-        order_invoice,
-        subtotal,
-        status,
-        user_id,
-      };
-      const result = await postOrder(setDataOrder);
-      const order_id = result.order_id;
-      let total = await getPrice(product_id);
-      total = total[0].product_price * qty;
-      //   const total = price * qty;
+      const { order_invoice, subtotal, status, user_id } = req.body;
+      const checkInvoice = await checkOrderInvoice(order_invoice);
+      console.log(checkInvoice);
+      if (checkInvoice < 1) {
+        const setDataOrder = {
+          order_invoice,
+          subtotal,
+          status,
+          user_id,
+        };
+        const result = await postOrder(setDataOrder);
+        return helper.response(res, 200, "Success Post Order", result);
+      } else {
+        return helper.response(res, 400, "INVOICE HAS BEEN USED");
+      }
+    } catch {
+      return helper.response(res, 400, "Bad Request", error);
+    }
+  },
+  createOrderHistory: async (req, res) => {
+    try {
+      let generate;
+      let result = [];
+      for (let i = 0; i < req.body.length; i++) {
+        const { product_id, qty, total, order_id } = req.body[i];
+        // total = await getPrice(product_id);
+        // console.log(total);
+        // total = total[0].product_price * qty;
+        const setDataOrderHistory = {
+          product_id,
+          qty,
+          total,
+          order_id,
+        };
+        generate = await postOrderHistory(setDataOrderHistory);
+        result.push(generate);
+      }
 
-      const setDataOrderHistory = {
-        product_id,
-        qty,
-        total,
-        order_id,
-      };
-
-      const result2 = await postOrderHistory(setDataOrderHistory);
-      //   let sum = await countSubtotal(order_id);
-      //   sum = sum[0].SUM(total);
-      //   let updateSubtotal = await updateSubtotal(sum, order_id);
-
-      return helper.response(res, 200, "Success Post Order", result2);
+      return helper.response(res, 200, "Success Post Order History", result);
     } catch {
       return helper.response(res, 400, "Bad Request", error);
     }
@@ -56,7 +61,12 @@ module.exports = {
       const { id } = req.params;
       const result = await getHistoryByIdModel(id);
       if (result.length > 0) {
-        return helper.response(res, 200, "Success Get History By Id", result);
+        return helper.response(
+          res,
+          200,
+          "Success Get History by order_id",
+          result
+        );
       } else {
         return helper.response(res, 404, `History By Id : ${id} Not Found`);
       }
@@ -70,6 +80,7 @@ module.exports = {
       const { id } = req.params;
 
       const checkId = await getHistoryByIdModel(id);
+      console.log(checkId);
       if (checkId.length > 0) {
         const result = await deleteHistoryModel(id);
         return helper.response(res, 200, `History has been deleted`, result);

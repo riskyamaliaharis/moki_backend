@@ -20,11 +20,10 @@ module.exports = {
       );
     });
   },
-  getProductSortingByName: (limit, offset) => {
+  getProductSorting: (limit, offset, sort) => {
     return new Promise((resolve, reject) => {
       connection.query(
-        "SELECT * FROM product ORDER BY product_name LIMIT ? OFFSET ?",
-        [limit, offset],
+        `SELECT * FROM product ORDER BY ${sort} LIMIT ${limit} OFFSET ${offset}`,
         (error, result) => {
           console.log(error);
           !error ? resolve(result) : reject(new Error(error));
@@ -32,29 +31,8 @@ module.exports = {
       );
     });
   },
-  getProductSortingByDate: (limit, offset) => {
-    return new Promise((resolve, reject) => {
-      connection.query(
-        "SELECT * FROM product ORDER BY product_created_at ASC LIMIT ? OFFSET ?",
-        [limit, offset],
-        (error, result) => {
-          !error ? resolve(result) : reject(new Error(error));
-        }
-      );
-    });
-  },
-  getProductSortingByPrice: (limit, offset) => {
-    return new Promise((resolve, reject) => {
-      connection.query(
-        "SELECT * FROM product ORDER BY product_price LIMIT ? OFFSET ?",
-        [limit, offset],
-        (error, result) => {
-          !error ? resolve(result) : reject(new Error(error));
-        }
-      );
-    });
-  },
-  getProduct: (limit, offset, search) => {
+
+  getProduct: (limit, offset) => {
     return new Promise((resolve, reject) => {
       connection.query(
         "SELECT * FROM product LIMIT ? OFFSET ?",
@@ -65,18 +43,11 @@ module.exports = {
       );
     });
   },
-  getProductSearching: (search, limit, offset) => {
+  getProductSearching: (search) => {
     return new Promise((resolve, reject) => {
       connection.query(
-        `SELECT * FROM product WHERE product_name LIKE '%` +
-          search +
-          `%' ORDER BY product_name LIMIT '` +
-          limit +
-          `' OFFSET '` +
-          offset +
-          `' `,
+        `SELECT * FROM product WHERE product_name LIKE '%${search}%' ORDER BY product_name`,
         (error, result) => {
-          console.log(error);
           !error ? resolve(result) : reject(new Error(error));
         }
       );

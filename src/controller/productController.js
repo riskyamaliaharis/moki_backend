@@ -6,9 +6,7 @@ const {
   patchProduct,
   deleteProductProcess,
   getProductSearching,
-  getProductSortingByName,
-  getProductSortingByDate,
-  getProductSortingByPrice,
+  getProductSorting,
   getProductCountSearching,
 } = require("../model/productModel");
 
@@ -96,7 +94,6 @@ module.exports = {
 
       const result = await getProduct(limit, offset);
       return helper.response(res, 200, "Success Get Product", result, pageInfo);
-      // // response.status(200).send(result)
     } catch (error) {
       console.log(error);
       return helper.response(response, 400, "Bad Request", error);
@@ -109,7 +106,7 @@ module.exports = {
       page = parseInt(page);
       limit = parseInt(limit);
 
-      const totalData = await getProductCountSearching();
+      const totalData = await getProductCountSearching(search);
       const totalPage = Math.ceil(totalData / limit);
 
       const offset = page * limit - limit;
@@ -135,6 +132,7 @@ module.exports = {
       console.log(totalData);
       if (totalData > 0) {
         result = await getProductSearching(search, limit, offset);
+        console.log(result);
         return helper.response(
           res,
           200,
@@ -157,40 +155,51 @@ module.exports = {
       let { page, limit, sort } = req.query;
       page = parseInt(page);
       limit = parseInt(limit);
-
-      const totalData = await getProductCount();
-      const totalPage = Math.ceil(totalData / limit);
-
-      const offset = page * limit - limit;
-      const prevLink =
-        page > 1 ? qs.stringify({ ...req.query, ...{ page: page - 1 } }) : null;
-      const nextLink =
-        page < totalPage
-          ? qs.stringify({ ...req.query, ...{ page: page + 1 } })
-          : null;
-      console.log(req.query);
-      console.log(qs.stringify(req.query));
-      const pageInfo = {
-        page,
-        totalPage,
-        limit,
-        totalData,
-        nextLink:
-          nextLink && `http://localhost:3000/product/sorting?${nextLink}`,
-        prevLink:
-          prevLink && `http://localhost:3000/product/sorting?${prevLink}`,
-      };
-      let result;
-      if (sort == "name") {
-        result = await getProductSortingByName(limit, offset);
-      } else if (sort == "date") {
-        result = await getProductSortingByDate(limit, offset);
-      } else if (sort == "price") {
-        result = await getProductSortingByPrice(limit, offset);
+      console.log(sort);
+      if (
+        sort !== "product_name" &&
+        sort !== "product_price" &&
+        sort !== "product_created_at"
+      ) {
+        return helper.response(
+          res,
+          400,
+          "sort parameter must be product_name, product_price, or product_created_at"
+        );
       } else {
-        res.send("Sorting method is not available");
+        const totalData = await getProductCount();
+        const totalPage = Math.ceil(totalData / limit);
+        const offset = page * limit - limit;
+        const prevLink =
+          page > 1
+            ? qs.stringify({ ...req.query, ...{ page: page - 1 } })
+            : null;
+        const nextLink =
+          page < totalPage
+            ? qs.stringify({ ...req.query, ...{ page: page + 1 } })
+            : null;
+        console.log(req.query);
+        console.log(qs.stringify(req.query));
+        const pageInfo = {
+          page,
+          totalPage,
+          limit,
+          totalData,
+          nextLink:
+            nextLink && `http://localhost:3000/product/sorting?${nextLink}`,
+          prevLink:
+            prevLink && `http://localhost:3000/product/sorting?${prevLink}`,
+        };
+        const result = await getProductSorting(limit, offset, sort);
+
+        return helper.response(
+          res,
+          200,
+          "Success Sorting Product based on " + sort,
+          result,
+          pageInfo
+        );
       }
-      return helper.response(res, 200, "Success Get Product", result, pageInfo);
     } catch (error) {
       console.log(error);
 
@@ -201,31 +210,13 @@ module.exports = {
   updateProduct: async (req, res) => {
     try {
       const { id } = req.params;
-      const {
-        category_id,
-        product_name,
-        product_price,
-        // product_stock,
-        // image_src,
-        // product_description,
-        // payment_method_id,
-        // delivery_method_id,
-        // size_id,
-        // discount_id,
-      } = req.body;
+      const { category_id, product_name, product_price } = req.body;
 
       const setData = {
         category_id,
         product_name,
         product_price,
         product_updated_at: new Date(),
-        // product_stock,
-        // image_src,
-        // product_description,
-        // payment_method_id,
-        // delivery_method_id,
-        // size_id,
-        // discount_id,
       };
       const checkId = await getProductById(id);
       if (checkId.length > 0) {
