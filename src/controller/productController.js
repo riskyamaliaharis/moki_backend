@@ -8,6 +8,8 @@ const {
   getProductSearching,
   getProductSorting,
   getProductCountSearching,
+  getProductCountCategory,
+  getProductByCategoryModel,
 } = require("../model/productModel");
 
 const helper = require("../helper/response");
@@ -26,6 +28,8 @@ module.exports = {
         payment_method_id,
         delivery_method_id,
         size_id,
+        delivery_start_hour,
+        delivery_end_hour,
         discount_id,
       } = req.body;
 
@@ -38,6 +42,8 @@ module.exports = {
         payment_method_id == "" ||
         delivery_method_id == "" ||
         size_id == "" ||
+        delivery_start_hour == "" ||
+        delivery_end_hour == "" ||
         discount_id == ""
       ) {
         res
@@ -57,6 +63,8 @@ module.exports = {
           payment_method_id,
           delivery_method_id,
           size_id,
+          delivery_start_hour,
+          delivery_end_hour,
           discount_id,
         };
         const result = await postProduct(setData);
@@ -64,6 +72,24 @@ module.exports = {
         return helper.response(res, 200, "Success Post Product", result);
       }
     } catch (error) {
+      return helper.response(res, 400, "Bad Request", error);
+    }
+  },
+  readProductById: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const result = await getProductById(id);
+      if (result.length > 0) {
+        return helper.response(res, 200, "Success Get Product By Id", result);
+      } else {
+        return helper.response(
+          res,
+          404,
+          `Product By Id : ${id} is running out`
+        );
+      }
+    } catch (error) {
+      console.log(error);
       return helper.response(res, 400, "Bad Request", error);
     }
   },
@@ -93,6 +119,43 @@ module.exports = {
       };
 
       const result = await getProduct(limit, offset);
+      return helper.response(res, 200, "Success Get Product", result, pageInfo);
+    } catch (error) {
+      console.log(error);
+      return helper.response(response, 400, "Bad Request", error);
+    }
+  },
+
+  readProductByCategory: async (req, res) => {
+    try {
+      let { page, limit, category_name } = req.query;
+      page = parseInt(page);
+      limit = parseInt(limit);
+      const totalData = await getProductCountCategory(category_name);
+      const totalPage = Math.ceil(totalData / limit);
+      const offset = page * limit - limit;
+      const prevLink =
+        page > 1 ? qs.stringify({ ...req.query, ...{ page: page - 1 } }) : null;
+      const nextLink =
+        page < totalPage
+          ? qs.stringify({ ...req.query, ...{ page: page + 1 } })
+          : null;
+      console.log(req.query);
+      console.log(qs.stringify(req.query));
+      const pageInfo = {
+        page,
+        totalPage,
+        limit,
+        totalData,
+        nextLink: nextLink && `http://localhost:3000/product?${nextLink}`,
+        prevLink: prevLink && `http://localhost:3000/product?${prevLink}`,
+      };
+
+      const result = await getProductByCategoryModel(
+        limit,
+        offset,
+        category_name
+      );
       return helper.response(res, 200, "Success Get Product", result, pageInfo);
     } catch (error) {
       console.log(error);

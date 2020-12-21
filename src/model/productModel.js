@@ -32,10 +32,22 @@ module.exports = {
     });
   },
 
+  getProductByCategoryModel: (limit, offset, category_name) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        `SELECT * FROM product INNER JOIN category ON product.category_id = category.category_id WHERE category.category_name = '${category_name}' ORDER BY product.product_name LIMIT ${limit} OFFSET ${offset}`,
+        (error, result) => {
+          console.log(error);
+          !error ? resolve(result) : reject(new Error(error));
+        }
+      );
+    });
+  },
+
   getProduct: (limit, offset) => {
     return new Promise((resolve, reject) => {
       connection.query(
-        "SELECT * FROM product LIMIT ? OFFSET ?",
+        "SELECT * FROM product WHERE product_stock>0 LIMIT ? OFFSET ?",
         [limit, offset],
         (error, result) => {
           !error ? resolve(result) : reject(new Error(error));
@@ -57,6 +69,16 @@ module.exports = {
     return new Promise((resolve, reject) => {
       connection.query(
         "SELECT COUNT(*) AS total FROM product",
+        (error, result) => {
+          !error ? resolve(result[0].total) : reject(new Error(error));
+        }
+      );
+    });
+  },
+  getProductCountCategory: (category_name) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        `SELECT COUNT(*) AS total FROM product JOIN category ON product.category_id = category.category_id WHERE category_name = '${category_name}'`,
         (error, result) => {
           !error ? resolve(result[0].total) : reject(new Error(error));
         }
