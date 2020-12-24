@@ -14,8 +14,11 @@ const {
 
 const helper = require("../helper/response");
 const qs = require("querystring");
+const redis = require("redis");
+const client = redis.createClient();
 
 module.exports = {
+  // POST PRODUCT
   createProduct: async (req, res) => {
     try {
       const {
@@ -33,6 +36,8 @@ module.exports = {
         discount_id,
       } = req.body;
 
+      console.log(req.file);
+
       if (
         category_id == "" ||
         product_name == "" ||
@@ -49,7 +54,7 @@ module.exports = {
         res
           .status(400)
           .send(
-            "Oh no! There is data that has not been filled. Please check it again"
+            "There is data that has not been filled. Please check it again"
           );
       } else {
         const setData = {
@@ -58,7 +63,7 @@ module.exports = {
           product_price,
           product_created_at: new Date(),
           product_stock,
-          image_src,
+          image_src: req.file === undefined ? "" : req.file.filename,
           product_description,
           payment_method_id,
           delivery_method_id,
@@ -67,6 +72,7 @@ module.exports = {
           delivery_end_hour,
           discount_id,
         };
+        console.log(setData);
         const result = await postProduct(setData);
         console.log(result);
         return helper.response(res, 200, "Success Post Product", result);
@@ -75,11 +81,14 @@ module.exports = {
       return helper.response(res, 400, "Bad Request", error);
     }
   },
+
+  // GET PRODUCT BY ID
   readProductById: async (req, res) => {
     try {
       const { id } = req.params;
       const result = await getProductById(id);
       if (result.length > 0) {
+        client.setex(`getproductbyid:${id}`, 3600, JSON.stringify(result));
         return helper.response(res, 200, "Success Get Product By Id", result);
       } else {
         return helper.response(
@@ -93,39 +102,41 @@ module.exports = {
       return helper.response(res, 400, "Bad Request", error);
     }
   },
-  readProduct: async (req, res) => {
-    try {
-      let { page, limit } = req.query;
-      page = parseInt(page);
-      limit = parseInt(limit);
-      const totalData = await getProductCount();
-      const totalPage = Math.ceil(totalData / limit);
-      const offset = page * limit - limit;
-      const prevLink =
-        page > 1 ? qs.stringify({ ...req.query, ...{ page: page - 1 } }) : null;
-      const nextLink =
-        page < totalPage
-          ? qs.stringify({ ...req.query, ...{ page: page + 1 } })
-          : null;
-      console.log(req.query);
-      console.log(qs.stringify(req.query));
-      const pageInfo = {
-        page,
-        totalPage,
-        limit,
-        totalData,
-        nextLink: nextLink && `http://localhost:3000/product?${nextLink}`,
-        prevLink: prevLink && `http://localhost:3000/product?${prevLink}`,
-      };
 
-      const result = await getProduct(limit, offset);
-      return helper.response(res, 200, "Success Get Product", result, pageInfo);
-    } catch (error) {
-      console.log(error);
-      return helper.response(response, 400, "Bad Request", error);
-    }
-  },
+  // readProduct: async (req, res) => {
+  //   try {
+  //     let { page, limit } = req.query;
+  //     page = parseInt(page);
+  //     limit = parseInt(limit);
+  //     const totalData = await getProductCount();
+  //     const totalPage = Math.ceil(totalData / limit);
+  //     const offset = page * limit - limit;
+  //     const prevLink =
+  //       page > 1 ? qs.stringify({ ...req.query, ...{ page: page - 1 } }) : null;
+  //     const nextLink =
+  //       page < totalPage
+  //         ? qs.stringify({ ...req.query, ...{ page: page + 1 } })
+  //         : null;
+  //     console.log(req.query);
+  //     console.log(qs.stringify(req.query));
+  //     const pageInfo = {
+  //       page,
+  //       totalPage,
+  //       limit,
+  //       totalData,
+  //       nextLink: nextLink && `http://localhost:3000/product?${nextLink}`,
+  //       prevLink: prevLink && `http://localhost:3000/product?${prevLink}`,
+  //     };
 
+  //     const result = await getProduct(limit, offset);
+  //     return helper.response(res, 200, "Success Get Product", result, pageInfo);
+  //   } catch (error) {
+  //     console.log(error);
+  //     return helper.response(response, 400, "Bad Request", error);
+  //   }
+  // },
+
+  // GET PRODUCT BY CATEGORY
   readProductByCategory: async (req, res) => {
     try {
       let { page, limit, category_name } = req.query;
@@ -163,6 +174,7 @@ module.exports = {
     }
   },
 
+  // GET PRODUCT -> SEARCHING
   readProductSearching: async (req, res) => {
     try {
       let { page, limit, search } = req.query;
@@ -213,21 +225,26 @@ module.exports = {
     }
   },
 
-  readProductSorting: async (req, res) => {
+  // GET PRODUCT (INCLUDING SORTING)
+  readProduct: async (req, res) => {
     try {
       let { page, limit, sort } = req.query;
       page = parseInt(page);
       limit = parseInt(limit);
       console.log(sort);
       if (
-        sort !== "product_name" &&
-        sort !== "product_price" &&
-        sort !== "product_created_at"
+        sort !== "product_name ASC" &&
+        sort !== "product_name DESC" &&
+        sort !== "product_price ASC" &&
+        sort !== "product_price DESC" &&
+        sort !== "product_created_at ASC" &&
+        sort !== "product_created_at DESC" &&
+        sort !== ""
       ) {
         return helper.response(
           res,
           400,
-          "sort parameter must be product_name, product_price, or product_created_at"
+          "sort parameter must be product_name ASC/DESC, product_price ASC/DESC, or product_created_at ASC/DESC"
         );
       } else {
         const totalData = await getProductCount();
@@ -248,13 +265,19 @@ module.exports = {
           totalPage,
           limit,
           totalData,
-          nextLink:
-            nextLink && `http://localhost:3000/product/sorting?${nextLink}`,
-          prevLink:
-            prevLink && `http://localhost:3000/product/sorting?${prevLink}`,
+          nextLink: nextLink && `http://localhost:3000/product?${nextLink}`,
+          prevLink: prevLink && `http://localhost:3000/product?${prevLink}`,
         };
         const result = await getProductSorting(limit, offset, sort);
-
+        const newData = {
+          result,
+          pageInfo,
+        };
+        client.setex(
+          `getproduct:${JSON.stringify(req.query)}`,
+          3600,
+          JSON.stringify(newData)
+        );
         return helper.response(
           res,
           200,
@@ -270,6 +293,7 @@ module.exports = {
     }
   },
 
+  // UPDATE PRODUCT
   updateProduct: async (req, res) => {
     try {
       const { id } = req.params;
@@ -283,7 +307,6 @@ module.exports = {
       };
       const checkId = await getProductById(id);
       if (checkId.length > 0) {
-        // proses update data
         const result = await patchProduct(setData, id);
         console.log(result);
         return helper.response(res, 200, `Success update product`, result);
@@ -294,6 +317,8 @@ module.exports = {
       return helper.response(res, 400, "Bad Request", error);
     }
   },
+
+  // DELETE PRODUCT (BY ID)
   deleteProduct: async (req, res) => {
     try {
       const { id } = req.params;
@@ -301,7 +326,12 @@ module.exports = {
       const checkId = await getProductById(id);
       if (checkId.length > 0) {
         const result = await deleteProductProcess(id);
-        return helper.response(res, 200, `The product has been deleted`);
+        return helper.response(
+          res,
+          200,
+          `The product has been deleted`,
+          result
+        );
       } else {
         return helper.response(res, 404, `Product By Id : ${id} Not Found`);
       }
