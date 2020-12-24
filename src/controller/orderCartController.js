@@ -37,10 +37,12 @@ module.exports = {
       let generate;
       let result = [];
       for (let i = 0; i < req.body.length; i++) {
-        const { product_id, qty, total, order_id } = req.body[i];
-        // total = await getPrice(product_id);
-        // console.log(total);
-        // total = total[0].product_price * qty;
+        const { product_id, qty, order_id } = req.body[i];
+        console.log(`Product ID : ` + product_id);
+        let total = await getPrice(product_id);
+
+        total = total[0].product_price * qty;
+        console.log(total);
         const setDataOrderHistory = {
           product_id,
           qty,
@@ -51,6 +53,7 @@ module.exports = {
         result.push(generate);
       }
 
+      console.log(result);
       return helper.response(res, 200, "Success Post Order History", result);
     } catch {
       return helper.response(res, 400, "Bad Request", error);
@@ -61,14 +64,9 @@ module.exports = {
       const { id } = req.params;
       const result = await getHistoryByIdModel(id);
       if (result.length > 0) {
-        return helper.response(
-          res,
-          200,
-          "Success Get History by order_id",
-          result
-        );
+        return helper.response(res, 200, "Success Get Order_list", result);
       } else {
-        return helper.response(res, 404, `History By Id : ${id} Not Found`);
+        return helper.response(res, 404, `No Order`);
       }
     } catch (error) {
       console.log(error);
@@ -91,4 +89,12 @@ module.exports = {
       return helper.response(res, 400, "Bad Request", error);
     }
   },
+
+  // readOrderList: async (req, res) => {
+  //   try {
+  //     const
+  //   } catch{
+
+  //   }
+  // }
 };

@@ -20,6 +20,17 @@ module.exports = {
       );
     });
   },
+
+  checkProduct: (product_name) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        `SELECT COUNT(*) AS total FROM product WHERE product_name = '${product_name}'`,
+        (error, result) => {
+          !error ? resolve(result[0].total) : reject(new Error(error));
+        }
+      );
+    });
+  },
   getProductSorting: (limit, offset, sort) => {
     return new Promise((resolve, reject) => {
       if (sort === "") {

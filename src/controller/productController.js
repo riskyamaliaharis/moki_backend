@@ -1,7 +1,7 @@
 const {
   postProduct,
   getProductCount,
-  getProduct,
+  checkProduct,
   getProductById,
   patchProduct,
   deleteProductProcess,
@@ -57,25 +57,31 @@ module.exports = {
             "There is data that has not been filled. Please check it again"
           );
       } else {
-        const setData = {
-          category_id,
-          product_name,
-          product_price,
-          product_created_at: new Date(),
-          product_stock,
-          image_src: req.file === undefined ? "" : req.file.filename,
-          product_description,
-          payment_method_id,
-          delivery_method_id,
-          size_id,
-          delivery_start_hour,
-          delivery_end_hour,
-          discount_id,
-        };
-        console.log(setData);
-        const result = await postProduct(setData);
-        console.log(result);
-        return helper.response(res, 200, "Success Post Product", result);
+        const totalproduct = await checkProduct(product_name);
+        // console.log("total " + totalproduct);
+        if (totalproduct > 0) {
+          return helper.response(res, 400, "Product has been listed");
+        } else {
+          const setData = {
+            category_id,
+            product_name,
+            product_price,
+            product_created_at: new Date(),
+            product_stock,
+            image_src: req.file === undefined ? "" : req.file.filename,
+            product_description,
+            payment_method_id,
+            delivery_method_id,
+            size_id,
+            delivery_start_hour,
+            delivery_end_hour,
+            discount_id,
+          };
+          console.log(setData);
+          const result = await postProduct(setData);
+          console.log(result);
+          return helper.response(res, 200, "Success Post Product", result);
+        }
       }
     } catch (error) {
       return helper.response(res, 400, "Bad Request", error);
