@@ -62,7 +62,7 @@ module.exports = {
           const { user_id, user_name, email, user_role } = checkDataUser[0];
           const payload = { user_id, user_name, email, user_role };
           console.log(payload);
-          const token = jwt.sign(payload, "privacy", { expiresIn: "3h" });
+          const token = jwt.sign(payload, "privacy", { expiresIn: "2s" });
           console.log(token);
           const result = { ...payload, token };
           const role = user_role === 1 ? "an admin" : "a customer";
