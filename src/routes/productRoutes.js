@@ -20,9 +20,14 @@ const {
 // http://localhost:3000/product
 router.post("/", authorizationforAdmin, uploadImage, createProduct);
 router.get("/", authorization, getProductRedis, readProduct);
-router.get("/selectproduct/:id", getProductByIdRedis, readProductById);
-router.get("/category", readProductByCategory);
-router.get("/searching", readProductSearching);
+router.get(
+  "/selectproduct/:id",
+  authorization,
+  getProductByIdRedis,
+  readProductById
+);
+router.get("/category", authorization, readProductByCategory);
+router.get("/searching", authorization, readProductSearching);
 // router.get("/sorting", getProductRedis, readProductSorting);
 router.patch(
   "/:id",
