@@ -15,6 +15,7 @@ const {
 const helper = require("../helper/response");
 const qs = require("querystring");
 const redis = require("redis");
+const fs = require("fs");
 const client = redis.createClient();
 
 module.exports = {
@@ -330,7 +331,21 @@ module.exports = {
       const { id } = req.params;
 
       const checkId = await getProductById(id);
+
+      const image = checkId[0].image_src;
+
+      console.log(image);
+
       if (checkId.length > 0) {
+        if (image !== "") {
+          // ./uploads/${checkId[0].image_src}
+          fs.unlinkSync("../../uploads/" + image, function (err) {
+            if (err) {
+              console.log(err);
+              throw err;
+            } else console.log("File deleted!");
+          });
+        }
         const result = await deleteProductProcess(id);
         return helper.response(
           res,
