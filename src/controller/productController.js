@@ -339,7 +339,7 @@ module.exports = {
       if (checkId.length > 0) {
         if (image !== "") {
           // ./uploads/${checkId[0].image_src}
-          fs.unlinkSync("../../uploads/" + image, function (err) {
+          fs.unlink("./uploads/" + image, function (err) {
             if (err) {
               console.log(err);
               throw err;
