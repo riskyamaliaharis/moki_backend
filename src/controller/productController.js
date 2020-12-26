@@ -304,16 +304,85 @@ module.exports = {
   updateProduct: async (req, res) => {
     try {
       const { id } = req.params;
-      const { category_id, product_name, product_price } = req.body;
-
-      const setData = {
+      let {
         category_id,
         product_name,
         product_price,
-        product_updated_at: new Date(),
-      };
+        product_stock,
+        image_src,
+        product_description,
+        payment_method_id,
+        delivery_method_id,
+        size_id,
+        delivery_start_hour,
+        delivery_end_hour,
+        discount_id,
+      } = req.body;
+
       const checkId = await getProductById(id);
+      console.log(checkId);
       if (checkId.length > 0) {
+        if (category_id === "") {
+          category_id = checkId[0].category_id;
+        }
+        if (product_name === "") {
+          product_name = checkId[0].product_name;
+        }
+        if (product_price === "") {
+          product_price = checkId[0].product_price;
+        }
+        if (product_stock === "") {
+          product_stock = checkId[0].product_stock;
+        }
+        if (image_src === "") {
+          image_src = checkId[0].image_src;
+        } else {
+          fs.unlink(`uploads/${checkId[0].image_src}`, function (err) {
+            if (err) {
+              console.log(err);
+              throw err;
+            } else console.log("File has been changed!");
+          });
+          image_src = image_src;
+        }
+        if (product_description === "") {
+          product_description = checkId[0].product_description;
+        }
+        if (payment_method_id === "") {
+          payment_method_id = checkId[0].payment_method_id;
+        }
+        if (delivery_method_id === "") {
+          delivery_method_id = checkId[0].delivery_method_id;
+        }
+        if (size_id === "") {
+          size_id = checkId[0].size_id;
+        }
+        if (delivery_start_hour === "") {
+          delivery_start_hour = checkId[0].delivery_start_hour;
+        }
+        if (delivery_end_hour === "") {
+          delivery_end_hour = checkId[0].delivery_end_hour;
+        }
+        if (discount_id === "") {
+          discount_id = checkId[0].discount_id;
+        }
+
+        const setData = {
+          category_id,
+          product_name,
+          product_price,
+          product_stock,
+          image_src: req.file === undefined ? "" : req.file.filename,
+          product_description,
+          payment_method_id,
+          delivery_method_id,
+          size_id,
+          delivery_start_hour,
+          delivery_end_hour,
+          discount_id,
+          product_updated_at: new Date(),
+        };
+
         const result = await patchProduct(setData, id);
         console.log(result);
         return helper.response(res, 200, `Success update product`, result);
@@ -338,8 +407,7 @@ module.exports = {
 
       if (checkId.length > 0) {
         if (image !== "") {
-          // ./uploads/${checkId[0].image_src}
-          fs.unlink("./uploads/" + image, function (err) {
+          fs.unlink(`uploads/${image}`, function (err) {
             if (err) {
               console.log(err);
               throw err;
