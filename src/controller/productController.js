@@ -265,8 +265,8 @@ module.exports = {
           page < totalPage
             ? qs.stringify({ ...req.query, ...{ page: page + 1 } })
             : null;
-        console.log(req.query);
-        console.log(qs.stringify(req.query));
+        console.log("req.query " + req.query);
+        console.log("qs stringify " + qs.stringify(req.query));
         const pageInfo = {
           page,
           totalPage,
@@ -319,6 +319,7 @@ module.exports = {
         discount_id,
       } = req.body;
 
+      console.log("image_src " + image_src);
       const checkId = await getProductById(id);
       console.log(checkId);
       if (checkId.length > 0) {
@@ -334,16 +335,16 @@ module.exports = {
         if (product_stock === "") {
           product_stock = checkId[0].product_stock;
         }
-        if (image_src === "") {
+        if (req.file === undefined) {
           image_src = checkId[0].image_src;
         } else {
+          image_src = req.file.filename;
           fs.unlink(`uploads/${checkId[0].image_src}`, function (err) {
             if (err) {
               console.log(err);
               throw err;
             } else console.log("File has been changed!");
           });
-          image_src = image_src;
         }
         if (product_description === "") {
           product_description = checkId[0].product_description;
@@ -372,7 +373,7 @@ module.exports = {
           product_name,
           product_price,
           product_stock,
-          image_src: req.file === undefined ? "" : req.file.filename,
+          image_src,
           product_description,
           payment_method_id,
           delivery_method_id,
