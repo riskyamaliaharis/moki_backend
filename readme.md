@@ -1,6 +1,13 @@
 <h1 align="center">ExpressJS - MOKI FOOD AND BEVERAGE</h1>
 
-#background_projek. [More about Express](https://en.wikipedia.org/wiki/Express.js)
+## background_projek.
+
+Moki Food and Beverage is online foods and beverages ordering application.
+This is a web based application, so that you do not need to download it first.
+You could access the application everywhere and everytime on your browser.
+It would be easier.
+The Backend of Moki Food an Beverage Project is built using Node JS framework, that is express JS.
+[More about Express](https://en.wikipedia.org/wiki/Express.js)
 
 ## Built With
 
