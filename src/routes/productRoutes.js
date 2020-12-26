@@ -19,7 +19,7 @@ const {
 
 // http://localhost:3000/product
 router.post("/", authorizationforAdmin, uploadImage, createProduct);
-router.get("/", authorization, getProductRedis, readProduct);
+router.get("/", readProduct); // authorization, getProductRedis,
 router.get(
   "/selectproduct/:id",
   authorization,
@@ -29,12 +29,7 @@ router.get(
 router.get("/category", authorization, readProductByCategory);
 router.get("/searching", authorization, readProductSearching);
 // router.get("/sorting", getProductRedis, readProductSorting);
-router.patch(
-  "/:id",
-  authorizationforAdmin,
-  clearDataProductRedis,
-  updateProduct
-); //
+router.patch("/:id", authorizationforAdmin, uploadImage, updateProduct); //clearDataProductRedis
 router.delete("/:id", authorizationforAdmin, deleteProduct);
 
 module.exports = router;
