@@ -33,7 +33,7 @@ The Backend of Moki Food an Beverage Project is built using Node JS framework, t
 8. You can see all the end point [here](https://documenter.getpostman.com/view/9852901/TVmS8Fce)
 
 ## Set up .env file
-
+"
 Open .env file on your favorite code editor, and copy paste this code below :
 
 ```
