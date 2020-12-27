@@ -3,6 +3,7 @@ const {
   getPromoByIdModel,
   patchPromo,
   deletePromoModel,
+  getPromoCountModel,
 } = require("../model/promoModel");
 
 const helper = require("../helper/response");
@@ -63,9 +64,10 @@ module.exports = {
         product_id,
       } = req.body;
 
-      const checkId = await getPromoByIdModel(id);
+      const countId = await getPromoCountModel(id);
+      const checkId = await getPromoCountModel(id);
 
-      if (checkId.length > 0) {
+      if (countId > 0) {
         if (coupon_code === "") {
           coupon_code = checkId[0].coupon_code;
         }
@@ -92,7 +94,11 @@ module.exports = {
         console.log(result);
         return helper.response(res, 200, `Success update promo`, result);
       } else {
-        return helper.response(res, 404, `Coupon By Id : ${id} Not Found`);
+        return helper.response(
+          res,
+          404,
+          `Coupon By Id : ${id} Is Not Found | Promo is not available`
+        );
       }
     } catch (error) {
       console.log(error);
@@ -103,16 +109,12 @@ module.exports = {
     try {
       const { id } = req.params;
 
-      const checkId = await getPromoByIdModel(id);
-      if (checkId.length > 0) {
+      const countId = await getPromoCountModel(id);
+      if (countId > 0) {
         const result = await deletePromoModel(id);
         return helper.response(res, 200, `Promo has been deleted`, result);
       } else {
-        return helper.response(
-          res,
-          404,
-          `Promo  ${id} with code ${checkId[0].coupon_code} Is Not Found`
-        );
+        return helper.response(res, 404, `Promo Is Not Available`);
       }
     } catch {
       return helper.response(res, 400, "Bad Request", error);
