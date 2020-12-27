@@ -15,6 +15,8 @@ const {
   getProductByIdRedis,
   clearDataProductRedis,
   getProductRedis,
+  getProductByCategoryRedis,
+  getProductSearchingRedis,
 } = require("../middleware/redis");
 
 // http://localhost:3000/product
@@ -32,8 +34,18 @@ router.get(
   getProductByIdRedis,
   readProductById
 ); //
-router.get("/category", authorization, readProductByCategory);
-router.get("/searching", authorization, readProductSearching);
+router.get(
+  "/category",
+  authorization,
+  getProductByCategoryRedis,
+  readProductByCategory
+);
+router.get(
+  "/searching",
+  authorization,
+  getProductSearchingRedis,
+  readProductSearching
+);
 router.patch(
   "/:id",
   authorizationforAdmin,

@@ -174,6 +174,15 @@ module.exports = {
         offset,
         category_name
       );
+      const newData = {
+        result,
+        pageInfo,
+      };
+      client.setex(
+        `getproductbycategoryname:${JSON.stringify(req.query)}`,
+        3600,
+        JSON.stringify(newData)
+      );
       return helper.response(res, 200, "Success Get Product", result, pageInfo);
     } catch (error) {
       console.log(error);
@@ -215,6 +224,15 @@ module.exports = {
       if (totalData > 0) {
         result = await getProductSearching(search, limit, offset);
         console.log(result);
+        const newData = {
+          result,
+          pageInfo,
+        };
+        client.setex(
+          `getproductsearching:${JSON.stringify(req.query)}`,
+          3600,
+          JSON.stringify(newData)
+        );
         return helper.response(
           res,
           200,

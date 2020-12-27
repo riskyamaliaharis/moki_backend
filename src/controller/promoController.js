@@ -6,6 +6,8 @@ const {
 } = require("../model/promoModel");
 
 const helper = require("../helper/response");
+const redis = require("redis");
+const client = redis.createClient();
 // const qs = require("querystring");
 
 module.exports = {
@@ -28,6 +30,7 @@ module.exports = {
       };
       const result = await postCoupon(setDataPromo);
       console.log(result);
+
       return helper.response(res, 200, "Success Post Promo", result);
     } catch {
       return helper.response(res, 400, "Bad Request", error);
@@ -39,6 +42,7 @@ module.exports = {
       const { id } = req.params;
       const result = await getPromoByIdModel(id);
       if (result.length > 0) {
+        client.setex(`getpromobyid:${id}`, 3600, JSON.stringify(result));
         return helper.response(res, 200, "Success Get Promo By Id", result);
       } else {
         return helper.response(res, 404, `Promo By Id : ${id} Not Found`);
@@ -51,7 +55,7 @@ module.exports = {
   updatePromo: async (req, res) => {
     try {
       const { id } = req.params;
-      const {
+      let {
         coupon_code,
         start_coupon,
         end_coupon,
@@ -59,15 +63,31 @@ module.exports = {
         product_id,
       } = req.body;
 
-      const setData = {
-        coupon_code,
-        start_coupon,
-        end_coupon,
-        coupon_discount,
-        product_id,
-      };
       const checkId = await getPromoByIdModel(id);
+
       if (checkId.length > 0) {
+        if (coupon_code === "") {
+          coupon_code = checkId[0].coupon_code;
+        }
+        if (start_coupon === "") {
+          start_coupon = checkId[0].start_coupon;
+        }
+        if (end_coupon === "") {
+          end_coupon = checkId[0].end_coupon;
+        }
+        if (coupon_discount === "") {
+          coupon_discount = checkId[0].coupon_discount;
+        }
+        if (product_id === "") {
+          product_id = checkId[0].product_id;
+        }
+        const setData = {
+          coupon_code,
+          start_coupon,
+          end_coupon,
+          coupon_discount,
+          product_id,
+        };
         const result = await patchPromo(setData, id);
         console.log(result);
         return helper.response(res, 200, `Success update promo`, result);
@@ -88,7 +108,11 @@ module.exports = {
         const result = await deletePromoModel(id);
         return helper.response(res, 200, `Promo has been deleted`, result);
       } else {
-        return helper.response(res, 404, `Product By Id : ${id} Not Found`);
+        return helper.response(
+          res,
+          404,
+          `Promo  ${id} with code ${checkId[0].coupon_code} Is Not Found`
+        );
       }
     } catch {
       return helper.response(res, 400, "Bad Request", error);
