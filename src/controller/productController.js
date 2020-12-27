@@ -338,13 +338,15 @@ module.exports = {
         if (req.file === undefined) {
           image_src = checkId[0].image_src;
         } else {
+          if (checkId[0].image_src !== "") {
+            fs.unlink(`uploads/${checkId[0].image_src}`, function (err) {
+              if (err) {
+                console.log(err);
+                throw err;
+              } else console.log("File has been changed!");
+            });
+          }
           image_src = req.file.filename;
-          fs.unlink(`uploads/${checkId[0].image_src}`, function (err) {
-            if (err) {
-              console.log(err);
-              throw err;
-            } else console.log("File has been changed!");
-          });
         }
         if (product_description === "") {
           product_description = checkId[0].product_description;
