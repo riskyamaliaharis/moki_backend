@@ -20,15 +20,36 @@ module.exports = {
       );
     });
   },
-  getProductSorting: (limit, offset, sort) => {
+
+  checkProduct: (product_name) => {
     return new Promise((resolve, reject) => {
       connection.query(
-        `SELECT * FROM product ORDER BY ${sort} LIMIT ${limit} OFFSET ${offset}`,
+        `SELECT COUNT(*) AS total FROM product WHERE product_name = '${product_name}'`,
         (error, result) => {
-          console.log(error);
-          !error ? resolve(result) : reject(new Error(error));
+          !error ? resolve(result[0].total) : reject(new Error(error));
         }
       );
+    });
+  },
+  getProductSorting: (limit, offset, sort) => {
+    return new Promise((resolve, reject) => {
+      if (sort === "") {
+        connection.query(
+          `SELECT * FROM product WHERE product_stock>0 LIMIT ${limit} OFFSET ${offset}`,
+          (error, result) => {
+            console.log(error);
+            !error ? resolve(result) : reject(new Error(error));
+          }
+        );
+      } else {
+        connection.query(
+          `SELECT * FROM product WHERE product_stock>0 ORDER BY ${sort} LIMIT ${limit} OFFSET ${offset}`,
+          (error, result) => {
+            console.log(error);
+            !error ? resolve(result) : reject(new Errr(error));
+          }
+        );
+      }
     });
   },
 

@@ -52,7 +52,6 @@ module.exports = {
       connection.query(
         `SELECT product_price FROM product WHERE product_id = ${product_id}`,
         (error, result) => {
-          console.log(error);
           !error ? resolve(result) : reject(new Error(error));
         }
       );
@@ -83,7 +82,7 @@ module.exports = {
   getHistoryByIdModel: (id) => {
     return new Promise((resolve, reject) => {
       connection.query(
-        "SELECT * FROM order_history WHERE order_history_id = ?",
+        "SELECT order_cart.order_invoice, product.product_name, product.product_price, order_history.qty, order_history.total FROM order_history JOIN product ON order_history.product_id = product.product_id JOIN order_cart ON order_cart.order_id = order_history.order_id WHERE order_cart.order_id = ?",
         id,
         (error, result) => {
           console.log(error);
