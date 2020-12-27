@@ -18,20 +18,35 @@ const {
 } = require("../middleware/redis");
 
 // http://localhost:3000/product
-router.post("/", authorizationforAdmin, uploadImage, createProduct);
-router.get("/", readProduct); // authorization, getProductRedis,
+router.post(
+  "/",
+  authorizationforAdmin,
+  clearDataProductRedis,
+  uploadImage,
+  createProduct
+); //
+router.get("/", authorization, getProductRedis, readProduct);
 router.get(
   "/selectproduct/:id",
   authorization,
   getProductByIdRedis,
   readProductById
-);
+); //
 router.get("/category", authorization, readProductByCategory);
 router.get("/searching", authorization, readProductSearching);
+router.patch(
+  "/:id",
+  authorizationforAdmin,
+  clearDataProductRedis,
+  uploadImage,
+  updateProduct
+); //
+router.delete(
+  "/:id",
+  authorizationforAdmin,
+  clearDataProductRedis,
+  deleteProduct
+);
 // router.get("/sorting", getProductRedis, readProductSorting);
-router.patch("/:id", authorizationforAdmin, uploadImage, updateProduct); //clearDataProductRedis
-router.delete("/:id", authorizationforAdmin, deleteProduct);
 
 module.exports = router;
-
-// https://github.com/riskyamaliaharis/moki_food_beverage
