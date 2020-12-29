@@ -104,11 +104,6 @@ module.exports = {
       today = `${yyyy}-${mm}-${dd}`;
 
       const result = await todaysIncomeModel(today);
-      client.setex(
-        `getordertodaysincome:${today}`,
-        3600,
-        JSON.stringify(result)
-      );
       return helper.response(
         res,
         200,

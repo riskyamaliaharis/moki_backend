@@ -136,29 +136,6 @@ module.exports = {
       }
     });
   },
-
-  getOrderTodaysIncomeRedis: (req, res, next) => {
-    let today = new Date();
-    const dd = String(today.getDate()).padStart(2, "0");
-    const mm = String(today.getMonth() + 1).padStart(2, "0");
-    const yyyy = today.getFullYear();
-    today = `${yyyy}-${mm}-${dd}`;
-
-    client.get(`getordertodaysincome:${today}`, (error, result) => {
-      if (!error && result !== null) {
-        console.log("Data Today's Income ada dalam Redis");
-        return helper.response(
-          res,
-          200,
-          "Success Get Data of Today's Income",
-          JSON.parse(result)
-        );
-      } else {
-        console.log("Data Today's Income tidak ada dalam Redis");
-        next();
-      }
-    });
-  },
   clearDataOrderHistoryRedis: (req, res, next) => {
     client.keys("getorder*", (_error, result) => {
       console.log(result);

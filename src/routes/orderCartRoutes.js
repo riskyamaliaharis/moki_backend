@@ -12,7 +12,6 @@ const { authorization } = require("../middleware/auth");
 const {
   getOrderListByIdRedis,
   clearDataOrderHistoryRedis,
-  getOrderTodaysIncomeRedis,
 } = require("../middleware/redis");
 
 router.post("/", authorization, clearDataOrderHistoryRedis, createOrder);
@@ -24,12 +23,7 @@ router.post(
 );
 router.get("/:id", authorization, getOrderListByIdRedis, getHistoryById);
 router.delete("/:id", authorization, clearDataOrderHistoryRedis, deleteHistory);
-router.get(
-  "/data/todaysincome",
-  authorization,
-  getOrderTodaysIncomeRedis,
-  todaysIncome
-);
+router.get("/data/todaysincome", authorization, todaysIncome);
 router.get("/data/yearsincome", authorization, yearsIncome);
 router.get("/data/totalorder", authorization, totalOrder);
 
