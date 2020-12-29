@@ -7,8 +7,9 @@ const {
   todaysIncome,
   yearsIncome,
   totalOrder,
+  markAsDone,
 } = require("../controller/orderCartController");
-const { authorization } = require("../middleware/auth");
+const { authorization, authorizationforAdmin } = require("../middleware/auth");
 const {
   getOrderListByIdRedis,
   clearDataOrderHistoryRedis,
@@ -26,5 +27,11 @@ router.delete("/:id", authorization, clearDataOrderHistoryRedis, deleteHistory);
 router.get("/data/todaysincome", authorization, todaysIncome);
 router.get("/data/yearsincome", authorization, yearsIncome);
 router.get("/data/totalorder", authorization, totalOrder);
+router.patch(
+  "/:id",
+  authorizationforAdmin,
+  clearDataOrderHistoryRedis,
+  markAsDone
+);
 
 module.exports = router;

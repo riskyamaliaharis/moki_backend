@@ -134,4 +134,11 @@ module.exports = {
       );
     });
   },
+  markAsDoneModel: (id) => {
+    return new Promise((resolve, reject) => {
+      connection.query("UPDATE order_cart SET status = 1", (error, result) => {
+        !error ? resolve(result) : reject(new Error(error));
+      });
+    });
+  },
 };

@@ -8,6 +8,7 @@ const {
   todaysIncomeModel,
   yearsIncomeModel,
   totalOrderModel,
+  markAsDoneModel,
 } = require("../model/orderCartModel");
 
 const helper = require("../helper/response");
@@ -137,6 +138,15 @@ module.exports = {
         "Success Get Data Total Order per Week",
         result
       );
+    } catch {
+      return helper.response(res, 400, "Bad Request", error);
+    }
+  },
+  markAsDone: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const result = await markAsDoneModel(id);
+      return helper.response(res, 200, "Order Process is done", result);
     } catch {
       return helper.response(res, 400, "Bad Request", error);
     }
