@@ -5,10 +5,14 @@ const {
   deleteHistoryModel,
   checkOrderInvoice,
   getPrice,
+  todaysIncomeModel,
+  yearsIncomeModel,
+  totalOrderModel,
 } = require("../model/orderCartModel");
 
 const helper = require("../helper/response");
-// const { patch } = require("../routes/orderCartRoutes");
+const redis = require("redis");
+const client = redis.createClient();
 
 module.exports = {
   createOrder: async (req, res) => {
@@ -22,6 +26,7 @@ module.exports = {
           subtotal,
           status,
           user_id,
+          order_created_at: new Date(),
         };
         const result = await postOrder(setDataOrder);
         return helper.response(res, 200, "Success Post Order", result);
@@ -64,6 +69,7 @@ module.exports = {
       const { id } = req.params;
       const result = await getHistoryByIdModel(id);
       if (result.length > 0) {
+        client.setex(`getorderlistbyid:${id}`, 3600, JSON.stringify(result));
         return helper.response(res, 200, "Success Get Order_list", result);
       } else {
         return helper.response(res, 404, `No Order`);
@@ -89,12 +95,55 @@ module.exports = {
       return helper.response(res, 400, "Bad Request", error);
     }
   },
+  todaysIncome: async (req, res) => {
+    try {
+      let today = new Date();
+      const dd = String(today.getDate()).padStart(2, "0"); //string.padStart(targetLength, padString)
+      const mm = String(today.getMonth() + 1).padStart(2, "0");
+      const yyyy = today.getFullYear();
+      today = `${yyyy}-${mm}-${dd}`;
 
-  // readOrderList: async (req, res) => {
-  //   try {
-  //     const
-  //   } catch{
+      const result = await todaysIncomeModel(today);
+      client.setex(
+        `getordertodaysincome:${today}`,
+        3600,
+        JSON.stringify(result)
+      );
+      return helper.response(
+        res,
+        200,
+        "Success Get Data of Today's Income",
+        result
+      );
+    } catch {
+      return helper.response(res, 400, "Bad Request", error);
+    }
+  },
+  yearsIncome: async (req, res) => {
+    try {
+      const result = await yearsIncomeModel();
 
-  //   }
-  // }
+      return helper.response(
+        res,
+        200,
+        "Success Get Data of Year's Income",
+        result
+      );
+    } catch {
+      return helper.response(res, 400, "Bad Request", error);
+    }
+  },
+  totalOrder: async (req, res) => {
+    try {
+      const result = await totalOrderModel();
+      return helper.response(
+        res,
+        200,
+        "Success Get Data Total Order per Week",
+        result
+      );
+    } catch {
+      return helper.response(res, 400, "Bad Request", error);
+    }
+  },
 };

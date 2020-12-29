@@ -103,4 +103,35 @@ module.exports = {
       );
     });
   },
+  todaysIncomeModel: (today) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        `SELECT SUM(subtotal) AS subtotal FROM order_cart WHERE order_created_at LIKE '${today}%'`,
+        (error, result) => {
+          console.log(error);
+          !error ? resolve(result[0].subtotal) : reject(new Error(error));
+        }
+      );
+    });
+  },
+  yearsIncomeModel: () => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        "SELECT SUM(subtotal) AS subtotal FROM order_cart WHERE YEAR(order_created_at) = YEAR(NOW())",
+        (error, result) => {
+          !error ? resolve(result[0].subtotal) : reject(new Error(error));
+        }
+      );
+    });
+  },
+  totalOrderModel: () => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        "SELECT COUNT(*) AS total FROM order_cart WHERE YEARWEEK(order_created_at) = YEARWEEK(CURDATE())",
+        (error, result) => {
+          !error ? resolve(result[0].total) : reject(new Error(error));
+        }
+      );
+    });
+  },
 };

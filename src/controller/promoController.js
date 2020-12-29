@@ -65,7 +65,8 @@ module.exports = {
       } = req.body;
 
       const countId = await getPromoCountModel(id);
-      const checkId = await getPromoCountModel(id);
+      console.log("count promo " + countId);
+      const checkId = await getPromoByIdModel(id);
 
       if (countId > 0) {
         if (coupon_code === "") {

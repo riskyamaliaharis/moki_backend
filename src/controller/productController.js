@@ -43,6 +43,7 @@ module.exports = {
         category_id == "" ||
         product_name == "" ||
         product_price == "" ||
+        req.file == undefined ||
         image_src == "" ||
         product_description == "" ||
         payment_method_id == "" ||
@@ -52,15 +53,27 @@ module.exports = {
         delivery_end_hour == "" ||
         discount_id == ""
       ) {
-        res
-          .status(400)
-          .send(
-            "There is data that has not been filled. Please check it again"
-          );
+        fs.unlink(`uploads/${req.file.filename}`, function (err) {
+          if (err) {
+            console.log(err);
+            throw err;
+          } else console.log("Uploading image is canceled");
+        });
+        return helper.response(
+          res,
+          400,
+          "There is data that has not been filled. Please check it again"
+        );
       } else {
         const totalproduct = await checkProduct(product_name);
-        // console.log("total " + totalproduct);
+
         if (totalproduct > 0) {
+          fs.unlink(`uploads/${req.file.filename}`, function (err) {
+            if (err) {
+              console.log(err);
+              throw err;
+            } else console.log("Uploading image is canceled");
+          });
           return helper.response(res, 400, "Product has been listed");
         } else {
           const setData = {
@@ -85,6 +98,12 @@ module.exports = {
         }
       }
     } catch (error) {
+      fs.unlink(`uploads/${req.file.filename}`, function (err) {
+        if (err) {
+          console.log(err);
+          throw err;
+        } else console.log("Uploading image is canceled");
+      });
       return helper.response(res, 400, "Bad Request", error);
     }
   },
@@ -408,9 +427,21 @@ module.exports = {
         console.log(result);
         return helper.response(res, 200, `Success update product`, result);
       } else {
+        fs.unlink(`uploads/${req.file.filename}`, function (err) {
+          if (err) {
+            console.log(err);
+            throw err;
+          } else console.log("Uploading image is canceled");
+        });
         return helper.response(res, 404, `Product By Id : ${id} Not Found`);
       }
     } catch (error) {
+      fs.unlink(`uploads/${req.file.filename}`, function (err) {
+        if (err) {
+          console.log(err);
+          throw err;
+        } else console.log("Uploading image is canceled");
+      });
       return helper.response(res, 400, "Bad Request", error);
     }
   },
