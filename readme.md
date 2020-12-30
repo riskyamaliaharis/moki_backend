@@ -33,11 +33,17 @@ The Backend of Moki Food an Beverage Project is built using Node JS framework, t
 8. You can see all the end point [here](https://documenter.getpostman.com/view/9852901/TVmS8Fce)
 
 ## Set up .env file
+
 "
 Open .env file on your favorite code editor, and copy paste this code below :
 
 ```
 DB_HOST=localhost // Database host
+DB_USER=root // Database Username
+DB_PASS= // Database Password
+DB_NAME=moki_food_beverage // Table Name
+DB_TIMEZONE=UTC // Database Timezone
+port=3000 // Port
 ```
 
 ## License
