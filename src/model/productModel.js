@@ -37,7 +37,6 @@ module.exports = {
         connection.query(
           `SELECT * FROM product WHERE product_stock>0 LIMIT ${limit} OFFSET ${offset}`,
           (error, result) => {
-            console.log(error);
             !error ? resolve(result) : reject(new Error(error));
           }
         );
@@ -45,7 +44,6 @@ module.exports = {
         connection.query(
           `SELECT * FROM product WHERE product_stock>0 ORDER BY ${sort} LIMIT ${limit} OFFSET ${offset}`,
           (error, result) => {
-            console.log(error);
             !error ? resolve(result) : reject(new Errr(error));
           }
         );
@@ -58,7 +56,6 @@ module.exports = {
       connection.query(
         `SELECT * FROM product INNER JOIN category ON product.category_id = category.category_id WHERE category.category_name = '${category_name}' ORDER BY product.product_name LIMIT ${limit} OFFSET ${offset}`,
         (error, result) => {
-          console.log(error);
           !error ? resolve(result) : reject(new Error(error));
         }
       );
@@ -134,7 +131,6 @@ module.exports = {
         "UPDATE product SET ? WHERE product_id = ?",
         [setData, id],
         (error, result) => {
-          console.log(error);
           if (!error) {
             const newResult = {
               product_id: id,
@@ -154,7 +150,6 @@ module.exports = {
         "DELETE FROM product WHERE product_id = ?",
         id,
         (error, result) => {
-          console.log(error);
           !error ? resolve(result) : reject(new Error(error));
         }
       );

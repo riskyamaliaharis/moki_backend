@@ -12,7 +12,6 @@ module.exports = {
           (error && error.name === "JsonWebTokenError") ||
           (error && error.name === "TokenExpiredError")
         ) {
-          console.log(error);
           return helper.response(response, 400, error.message);
         } else {
           console.log(result);
@@ -34,7 +33,6 @@ module.exports = {
           (error && error.name === "JsonWebTokenError") ||
           (error && error.name === "TokenExpiredError")
         ) {
-          console.log(error);
           return helper.response(response, 400, error.message);
         } else {
           if (result.user_role === 1) {

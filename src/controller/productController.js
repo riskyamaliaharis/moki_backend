@@ -19,7 +19,6 @@ const fs = require("fs");
 const client = redis.createClient();
 
 module.exports = {
-  // POST PRODUCT
   createProduct: async (req, res) => {
     try {
       const {
@@ -37,8 +36,6 @@ module.exports = {
         discount_id,
       } = req.body;
 
-      console.log(req.file);
-
       if (
         category_id == "" ||
         product_name == "" ||
@@ -55,7 +52,6 @@ module.exports = {
       ) {
         fs.unlink(`uploads/${req.file.filename}`, function (err) {
           if (err) {
-            console.log(err);
             throw err;
           } else console.log("Uploading image is canceled");
         });
@@ -70,7 +66,6 @@ module.exports = {
         if (totalproduct > 0) {
           fs.unlink(`uploads/${req.file.filename}`, function (err) {
             if (err) {
-              console.log(err);
               throw err;
             } else console.log("Uploading image is canceled");
           });
@@ -91,16 +86,13 @@ module.exports = {
             delivery_end_hour,
             discount_id,
           };
-          console.log(setData);
           const result = await postProduct(setData);
-          console.log(result);
           return helper.response(res, 200, "Success Post Product", result);
         }
       }
     } catch (error) {
       fs.unlink(`uploads/${req.file.filename}`, function (err) {
         if (err) {
-          console.log(err);
           throw err;
         } else console.log("Uploading image is canceled");
       });
@@ -108,7 +100,6 @@ module.exports = {
     }
   },
 
-  // GET PRODUCT BY ID
   readProductById: async (req, res) => {
     try {
       const { id } = req.params;
@@ -124,45 +115,10 @@ module.exports = {
         );
       }
     } catch (error) {
-      console.log(error);
       return helper.response(res, 400, "Bad Request", error);
     }
   },
 
-  // readProduct: async (req, res) => {
-  //   try {
-  //     let { page, limit } = req.query;
-  //     page = parseInt(page);
-  //     limit = parseInt(limit);
-  //     const totalData = await getProductCount();
-  //     const totalPage = Math.ceil(totalData / limit);
-  //     const offset = page * limit - limit;
-  //     const prevLink =
-  //       page > 1 ? qs.stringify({ ...req.query, ...{ page: page - 1 } }) : null;
-  //     const nextLink =
-  //       page < totalPage
-  //         ? qs.stringify({ ...req.query, ...{ page: page + 1 } })
-  //         : null;
-  //     console.log(req.query);
-  //     console.log(qs.stringify(req.query));
-  //     const pageInfo = {
-  //       page,
-  //       totalPage,
-  //       limit,
-  //       totalData,
-  //       nextLink: nextLink && `http://localhost:3000/product?${nextLink}`,
-  //       prevLink: prevLink && `http://localhost:3000/product?${prevLink}`,
-  //     };
-
-  //     const result = await getProduct(limit, offset);
-  //     return helper.response(res, 200, "Success Get Product", result, pageInfo);
-  //   } catch (error) {
-  //     console.log(error);
-  //     return helper.response(response, 400, "Bad Request", error);
-  //   }
-  // },
-
-  // GET PRODUCT BY CATEGORY
   readProductByCategory: async (req, res) => {
     try {
       let { page, limit, category_name } = req.query;
@@ -177,8 +133,7 @@ module.exports = {
         page < totalPage
           ? qs.stringify({ ...req.query, ...{ page: page + 1 } })
           : null;
-      console.log(req.query);
-      console.log(qs.stringify(req.query));
+
       const pageInfo = {
         page,
         totalPage,
@@ -204,12 +159,10 @@ module.exports = {
       );
       return helper.response(res, 200, "Success Get Product", result, pageInfo);
     } catch (error) {
-      console.log(error);
       return helper.response(response, 400, "Bad Request", error);
     }
   },
 
-  // GET PRODUCT -> SEARCHING
   readProductSearching: async (req, res) => {
     try {
       let { page, limit, search } = req.query;
@@ -226,8 +179,7 @@ module.exports = {
         page < totalPage
           ? qs.stringify({ ...req.query, ...{ page: page + 1 } })
           : null;
-      console.log(req.query);
-      console.log(qs.stringify(req.query));
+
       const pageInfo = {
         page,
         totalPage,
@@ -239,10 +191,9 @@ module.exports = {
           prevLink && `http://localhost:3000/product/searching?${prevLink}`,
       };
       let result;
-      console.log(totalData);
+
       if (totalData > 0) {
         result = await getProductSearching(search, limit, offset);
-        console.log(result);
         const newData = {
           result,
           pageInfo,
@@ -263,19 +214,15 @@ module.exports = {
         return helper.response(res, 400, "Data not found");
       }
     } catch (error) {
-      console.log(error);
-
       return helper.response(res, 400, "Bad Request", error);
     }
   },
 
-  // GET PRODUCT (INCLUDING SORTING)
   readProduct: async (req, res) => {
     try {
       let { page, limit, sort } = req.query;
       page = parseInt(page);
       limit = parseInt(limit);
-      console.log(sort);
       if (
         sort !== "product_name ASC" &&
         sort !== "product_name DESC" &&
@@ -302,8 +249,6 @@ module.exports = {
           page < totalPage
             ? qs.stringify({ ...req.query, ...{ page: page + 1 } })
             : null;
-        console.log("req.query " + req.query);
-        console.log("qs stringify " + qs.stringify(req.query));
         const pageInfo = {
           page,
           totalPage,
@@ -331,13 +276,10 @@ module.exports = {
         );
       }
     } catch (error) {
-      console.log(error);
-
       return helper.response(res, 400, "Bad Request", error);
     }
   },
 
-  // UPDATE PRODUCT
   updateProduct: async (req, res) => {
     try {
       const { id } = req.params;
@@ -356,9 +298,8 @@ module.exports = {
         discount_id,
       } = req.body;
 
-      console.log("image_src " + image_src);
       const checkId = await getProductById(id);
-      console.log(checkId);
+
       if (checkId.length > 0) {
         if (category_id === "") {
           category_id = checkId[0].category_id;
@@ -378,7 +319,6 @@ module.exports = {
           if (checkId[0].image_src !== "") {
             fs.unlink(`uploads/${checkId[0].image_src}`, function (err) {
               if (err) {
-                console.log(err);
                 throw err;
               } else console.log("File has been changed!");
             });
@@ -424,12 +364,10 @@ module.exports = {
         };
 
         const result = await patchProduct(setData, id);
-        console.log(result);
         return helper.response(res, 200, `Success update product`, result);
       } else {
         fs.unlink(`uploads/${req.file.filename}`, function (err) {
           if (err) {
-            console.log(err);
             throw err;
           } else console.log("Uploading image is canceled");
         });
@@ -438,7 +376,6 @@ module.exports = {
     } catch (error) {
       fs.unlink(`uploads/${req.file.filename}`, function (err) {
         if (err) {
-          console.log(err);
           throw err;
         } else console.log("Uploading image is canceled");
       });
@@ -446,7 +383,6 @@ module.exports = {
     }
   },
 
-  // DELETE PRODUCT (BY ID)
   deleteProduct: async (req, res) => {
     try {
       const { id } = req.params;
@@ -455,13 +391,10 @@ module.exports = {
 
       const image = checkId[0].image_src;
 
-      console.log(image);
-
       if (checkId.length > 0) {
         if (image !== "") {
           fs.unlink(`uploads/${image}`, function (err) {
             if (err) {
-              console.log(err);
               throw err;
             } else console.log("File deleted!");
           });

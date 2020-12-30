@@ -22,7 +22,7 @@ module.exports = {
     try {
       const { order_invoice, subtotal, user_id } = req.body;
       const checkInvoice = await checkOrderInvoice(order_invoice);
-      console.log(checkInvoice);
+
       if (checkInvoice < 1) {
         const setDataOrder = {
           order_invoice,
@@ -46,11 +46,9 @@ module.exports = {
       let result = [];
       for (let i = 0; i < req.body.length; i++) {
         const { product_id, qty, order_id } = req.body[i];
-        console.log(`Product ID : ` + product_id);
         let total = await getPrice(product_id);
-
         total = total[0].product_price * qty;
-        console.log(total);
+
         const setDataOrderHistory = {
           product_id,
           qty,
@@ -60,8 +58,6 @@ module.exports = {
         generate = await postOrderHistory(setDataOrderHistory);
         result.push(generate);
       }
-
-      console.log(result);
       return helper.response(res, 200, "Success Post Order History", result);
     } catch {
       return helper.response(res, 400, "Bad Request", error);
@@ -78,7 +74,6 @@ module.exports = {
         return helper.response(res, 404, `No Order`);
       }
     } catch (error) {
-      console.log(error);
       return helper.response(res, 400, "Bad Request", error);
     }
   },
@@ -87,7 +82,6 @@ module.exports = {
       const { id } = req.params;
 
       const checkId = await getHistoryByIdModel(id);
-      console.log(checkId);
       if (checkId.length > 0) {
         const result = await deleteHistoryModel(id);
         return helper.response(res, 200, `History has been deleted`, result);
@@ -100,13 +94,7 @@ module.exports = {
   },
   todaysIncome: async (req, res) => {
     try {
-      let today = new Date();
-      const dd = String(today.getDate()).padStart(2, "0"); //string.padStart(targetLength, padString)
-      const mm = String(today.getMonth() + 1).padStart(2, "0");
-      const yyyy = today.getFullYear();
-      today = `${yyyy}-${mm}-${dd}`;
-
-      const result = await todaysIncomeModel(today);
+      const result = await todaysIncomeModel();
       return helper.response(
         res,
         200,

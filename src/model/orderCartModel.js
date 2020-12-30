@@ -85,7 +85,6 @@ module.exports = {
         "SELECT order_cart.order_invoice, product.product_name, product.product_price, order_history.qty, order_history.total FROM order_history JOIN product ON order_history.product_id = product.product_id JOIN order_cart ON order_cart.order_id = order_history.order_id WHERE order_cart.order_id = ?",
         id,
         (error, result) => {
-          console.log(error);
           !error ? resolve(result) : reject(new Error(error));
         }
       );
@@ -97,29 +96,16 @@ module.exports = {
         "DELETE FROM order_cart WHERE order_id = ?",
         id,
         (error, result) => {
-          console.log(error);
           !error ? resolve(result) : reject(new Error(error));
         }
       );
     });
   },
-  todaysIncomeModel: (today) => {
+  todaysIncomeModel: () => {
     return new Promise((resolve, reject) => {
       connection.query(
-        `SELECT SUM(subtotal) AS subtotal FROM order_cart WHERE order_created_at LIKE '${today}%'`,
+        `SELECT SUM(subtotal) AS subtotal FROM order_cart WHERE DATE(order_created_at) = DATE(NOW())`,
         (error, result) => {
-          console.log(error);
-          !error ? resolve(result[0].subtotal) : reject(new Error(error));
-        }
-      );
-    });
-  },
-  yesterdayIncomeModel: (yesterday) => {
-    return new Promise((resolve, reject) => {
-      connection.query(
-        `SELECT SUM(subtotal) AS subtotal FROM order_cart WHERE order_created_at = SUBDATE(NOW(), 1)`,
-        (error, result) => {
-          console.log(error);
           !error ? resolve(result[0].subtotal) : reject(new Error(error));
         }
       );

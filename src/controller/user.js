@@ -12,7 +12,6 @@ const fs = require("fs");
 
 module.exports = {
   userRegister: async (request, response) => {
-    // console.log(request.body);
     try {
       const {
         user_name,
@@ -43,7 +42,6 @@ module.exports = {
       ) {
         fs.unlink(`uploads/user/${request.file.filename}`, function (err) {
           if (err) {
-            console.log(err);
             throw err;
           } else console.log("Uploading image is canceled");
         });
@@ -58,7 +56,6 @@ module.exports = {
         if (checkUser.length > 0) {
           fs.unlink(`uploads/user/${request.file.filename}`, function (err) {
             if (err) {
-              console.log(err);
               throw err;
             } else console.log("Uploading image is canceled");
           });
@@ -86,14 +83,12 @@ module.exports = {
           };
 
           const result = await userRegister(setData);
-          console.log(result);
           return helper.response(response, 200, "Success Register", result);
         }
       }
     } catch (error) {
       fs.unlink(`uploads/user/${request.file.filename}`, function (err) {
         if (err) {
-          console.log(err);
           throw err;
         } else console.log("Uploading image is canceled");
       });
@@ -104,7 +99,6 @@ module.exports = {
     try {
       const { email, password } = request.body;
 
-      //   PENGECEKAN KEBERADAAN EMAIL
       const checkDataUser = await checkEmail(email);
 
       if (checkDataUser.length > 0) {
@@ -113,10 +107,8 @@ module.exports = {
           checkDataUser[0].password
         );
         if (checkPassword) {
-          //GET TOKEN
           const { user_id, user_name, email, user_role } = checkDataUser[0];
           const payload = { user_id, user_name, email, user_role };
-          console.log(payload);
           const token = jwt.sign(payload, "privacy", { expiresIn: "3h" });
           console.log(token);
           const result = { ...payload, token };
@@ -180,7 +172,6 @@ module.exports = {
           if (checkId[0].user_photo !== "") {
             fs.unlink(`uploads/user/${checkId[0].user_photo}`, function (err) {
               if (err) {
-                console.log(err);
                 throw err;
               } else console.log("File has been changed!");
             });
@@ -219,7 +210,6 @@ module.exports = {
       } else {
         fs.unlink(`uploads/user/${request.file.filename}`, function (err) {
           if (err) {
-            console.log(err);
             throw err;
           } else console.log("Uploading image is canceled");
         });
@@ -228,7 +218,6 @@ module.exports = {
     } catch {
       fs.unlink(`uploads/user/${request.file.filename}`, function (err) {
         if (err) {
-          console.log(err);
           throw err;
         } else console.log("Uploading image is canceled");
       });

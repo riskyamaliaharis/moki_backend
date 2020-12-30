@@ -9,7 +9,6 @@ const {
 const helper = require("../helper/response");
 const redis = require("redis");
 const client = redis.createClient();
-// const qs = require("querystring");
 
 module.exports = {
   createCoupon: async (req, res) => {
@@ -30,7 +29,6 @@ module.exports = {
         product_id,
       };
       const result = await postCoupon(setDataPromo);
-      console.log(result);
 
       return helper.response(res, 200, "Success Post Promo", result);
     } catch {
@@ -49,7 +47,6 @@ module.exports = {
         return helper.response(res, 404, `Promo By Id : ${id} Not Found`);
       }
     } catch (error) {
-      console.log(error);
       return helper.response(res, 400, "Bad Request", error);
     }
   },
@@ -65,7 +62,6 @@ module.exports = {
       } = req.body;
 
       const countId = await getPromoCountModel(id);
-      console.log("count promo " + countId);
       const checkId = await getPromoByIdModel(id);
 
       if (countId > 0) {
@@ -92,7 +88,6 @@ module.exports = {
           product_id,
         };
         const result = await patchPromo(setData, id);
-        console.log(result);
         return helper.response(res, 200, `Success update promo`, result);
       } else {
         return helper.response(
@@ -102,7 +97,6 @@ module.exports = {
         );
       }
     } catch (error) {
-      console.log(error);
       return helper.response(res, 400, "Bad Request", error);
     }
   },

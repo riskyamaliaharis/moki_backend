@@ -4,7 +4,6 @@ const {
   createProduct,
   readProduct,
   readProductSearching,
-  // readProductSorting,
   updateProduct,
   deleteProduct,
   readProductByCategory,
@@ -19,21 +18,20 @@ const {
   getProductSearchingRedis,
 } = require("../middleware/redis");
 
-// http://localhost:3000/product
 router.post(
   "/",
   authorizationforAdmin,
   clearDataProductRedis,
   uploadImage,
   createProduct
-); //
+);
 router.get("/", authorization, getProductRedis, readProduct);
 router.get(
   "/selectproduct/:id",
   authorization,
   getProductByIdRedis,
   readProductById
-); //
+);
 router.get(
   "/category",
   authorization,
@@ -52,13 +50,12 @@ router.patch(
   clearDataProductRedis,
   uploadImage,
   updateProduct
-); //
+);
 router.delete(
   "/:id",
   authorizationforAdmin,
   clearDataProductRedis,
   deleteProduct
 );
-// router.get("/sorting", getProductRedis, readProductSorting);
 
 module.exports = router;

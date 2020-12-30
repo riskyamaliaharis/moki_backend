@@ -14,7 +14,6 @@ module.exports = {
             };
             resolve(newResult);
           } else {
-            console.log(error);
             reject(new Error(error));
           }
         }
@@ -27,7 +26,6 @@ module.exports = {
         "SELECT * FROM promo WHERE promo_id = ?",
         id,
         (error, result) => {
-          console.log(error);
           !error ? resolve(result) : reject(new Error(error));
         }
       );
@@ -39,7 +37,6 @@ module.exports = {
         "SELECT COUNT(*) AS sum FROM promo WHERE promo_id = ?",
         id,
         (error, result) => {
-          console.log(result);
           const newResult = result[0].sum;
           !error ? resolve(newResult) : reject(new Error(error));
         }
@@ -52,7 +49,6 @@ module.exports = {
         "UPDATE promo SET ? WHERE promo_id = ?",
         [setData, id],
         (error, result) => {
-          console.log(error);
           if (!error) {
             const newResult = {
               promo_id: id,
@@ -72,7 +68,6 @@ module.exports = {
         "DELETE FROM promo WHERE product_id = ?",
         id,
         (error, result) => {
-          console.log(error);
           !error ? resolve(result) : reject(new Error(error));
         }
       );
