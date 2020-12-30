@@ -94,7 +94,7 @@ module.exports = {
   deleteHistoryModel: (id) => {
     return new Promise((resolve, reject) => {
       connection.query(
-        "DELETE FROM order_history WHERE order_history_id = ?",
+        "DELETE FROM order_cart WHERE order_id = ?",
         id,
         (error, result) => {
           console.log(error);
@@ -107,6 +107,17 @@ module.exports = {
     return new Promise((resolve, reject) => {
       connection.query(
         `SELECT SUM(subtotal) AS subtotal FROM order_cart WHERE order_created_at LIKE '${today}%'`,
+        (error, result) => {
+          console.log(error);
+          !error ? resolve(result[0].subtotal) : reject(new Error(error));
+        }
+      );
+    });
+  },
+  yesterdayIncomeModel: (yesterday) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        `SELECT SUM(subtotal) AS subtotal FROM order_cart WHERE order_created_at = SUBDATE(NOW(), 1)`,
         (error, result) => {
           console.log(error);
           !error ? resolve(result[0].subtotal) : reject(new Error(error));
@@ -136,9 +147,33 @@ module.exports = {
   },
   markAsDoneModel: (id) => {
     return new Promise((resolve, reject) => {
-      connection.query("UPDATE order_cart SET status = 1", (error, result) => {
-        !error ? resolve(result) : reject(new Error(error));
-      });
+      connection.query(
+        "UPDATE order_cart SET status = 1 WHERE order_id = ?",
+        id,
+        (error, result) => {
+          !error ? resolve(result) : reject(new Error(error));
+        }
+      );
+    });
+  },
+  revenuePerDayModel: () => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        "SELECT DAYOFWEEK(order_created_at) AS day, SUM(subtotal) AS subtotal FROM order_cart WHERE YEARWEEK(order_created_at) = YEARWEEK(CURDATE()) GROUP BY DATE(order_created_at)",
+        (error, result) => {
+          !error ? resolve(result) : reject(new Error(error));
+        }
+      );
+    });
+  },
+  revenuePerMonthModel: () => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        "SELECT MONTH(order_created_at) AS month, SUM(subtotal) AS subtotal FROM order_cart WHERE YEAR(order_created_at) = YEAR(NOW()) GROUP BY MONTH(order_created_at)",
+        (error, result) => {
+          !error ? resolve(result) : reject(new Error(error));
+        }
+      );
     });
   },
 };

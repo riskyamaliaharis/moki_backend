@@ -9,6 +9,8 @@ const {
   yearsIncomeModel,
   totalOrderModel,
   markAsDoneModel,
+  revenuePerMonthModel,
+  revenuePerDayModel,
 } = require("../model/orderCartModel");
 
 const helper = require("../helper/response");
@@ -18,14 +20,14 @@ const client = redis.createClient();
 module.exports = {
   createOrder: async (req, res) => {
     try {
-      const { order_invoice, subtotal, status, user_id } = req.body;
+      const { order_invoice, subtotal, user_id } = req.body;
       const checkInvoice = await checkOrderInvoice(order_invoice);
       console.log(checkInvoice);
       if (checkInvoice < 1) {
         const setDataOrder = {
           order_invoice,
           subtotal,
-          status,
+          status: 0,
           user_id,
           order_created_at: new Date(),
         };
@@ -147,6 +149,22 @@ module.exports = {
       const { id } = req.params;
       const result = await markAsDoneModel(id);
       return helper.response(res, 200, "Order Process is done", result);
+    } catch {
+      return helper.response(res, 400, "Bad Request", error);
+    }
+  },
+  revenuePerMonth: async (req, res) => {
+    try {
+      const result = await revenuePerMonthModel();
+      return helper.response(res, 200, "Success Get Revenue Per Month", result);
+    } catch {
+      return helper.response(res, 400, "Bad Request", error);
+    }
+  },
+  revenuePerDay: async (req, res) => {
+    try {
+      const result = await revenuePerDayModel();
+      return helper.response(res, 200, "Success Get Revenue Per Day", result);
     } catch {
       return helper.response(res, 400, "Bad Request", error);
     }

@@ -8,6 +8,8 @@ const {
   yearsIncome,
   totalOrder,
   markAsDone,
+  revenuePerMonth,
+  revenuePerDay,
 } = require("../controller/orderCartController");
 const { authorization, authorizationforAdmin } = require("../middleware/auth");
 const {
@@ -33,5 +35,7 @@ router.patch(
   clearDataOrderHistoryRedis,
   markAsDone
 );
+router.get("/chart/revenuepermonth", authorization, revenuePerMonth);
+router.get("/chart/revenueperday", authorization, revenuePerDay);
 
 module.exports = router;
