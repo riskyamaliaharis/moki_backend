@@ -73,10 +73,10 @@ module.exports = {
       );
     });
   },
-  getProductSearching: (search) => {
+  getProductSearching: (search, limit, offset) => {
     return new Promise((resolve, reject) => {
       connection.query(
-        `SELECT * FROM product WHERE product_name LIKE '%${search}%' ORDER BY product_name`,
+        `SELECT * FROM product WHERE product_name LIKE '%${search}%' AND product_stock>0 ORDER BY product_name LIMIT ${limit} OFFSET ${offset}`,
         (error, result) => {
           !error ? resolve(result) : reject(new Error(error));
         }
@@ -86,7 +86,18 @@ module.exports = {
   getProductCount: () => {
     return new Promise((resolve, reject) => {
       connection.query(
-        "SELECT COUNT(*) AS total FROM product",
+        "SELECT COUNT(*) AS total FROM product WHERE product_stock>0",
+        (error, result) => {
+          !error ? resolve(result[0].total) : reject(new Error(error));
+        }
+      );
+    });
+  },
+  getProductCountId: (id) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        "SELECT COUNT(*) AS total FROM product where product_id= ?",
+        id,
         (error, result) => {
           !error ? resolve(result[0].total) : reject(new Error(error));
         }
@@ -119,6 +130,8 @@ module.exports = {
         "SELECT * FROM product WHERE product_id = ?",
         id,
         (error, result) => {
+          console.log("error  " + error);
+          console.log("result  " + result);
           !error ? resolve(result) : reject(new Error(error));
         }
       );

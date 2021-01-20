@@ -73,4 +73,11 @@ module.exports = {
       );
     });
   },
+  getAllPromoModel: () => {
+    return new Promise((resolve, reject) => {
+      connection.query("SELECT * FROM promo", (error, result) => {
+        !error ? resolve(result) : reject(new Error(error));
+      });
+    });
+  },
 };

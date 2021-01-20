@@ -13,14 +13,13 @@ const fs = require("fs");
 module.exports = {
   userRegister: async (request, response) => {
     try {
-      const {
+      let {
         user_name,
         email,
         password,
-        display_name,
+        user_photo,
         first_name,
         last_name,
-        user_photo,
         mobile,
         gender,
         address,
@@ -30,21 +29,21 @@ module.exports = {
       if (
         user_name === "" ||
         email === "" ||
-        password === "" ||
-        display_name === "" ||
-        first_name === "" ||
-        last_name === "" ||
-        request.file === undefined ||
-        mobile === "" ||
-        gender === "" ||
-        address == "" ||
-        member_card_status === ""
+        password === ""
+        // first_name === "" ||
+        // last_name === "" ||
+        // request.file === undefined ||
+        // mobile === "" ||
+        // gender === "" ||
+        // address == "" ||
+        // member_card_status === ""
       ) {
-        fs.unlink(`uploads/user/${request.file.filename}`, function (err) {
-          if (err) {
-            throw err;
-          } else console.log("Uploading image is canceled");
-        });
+        // fs.unlink(`uploads/user/${request.file.filename}`, function (err) {
+        //   if (err) {
+        //     throw err;
+        //   } else console.log("Uploading image is canceled");
+        // });
+
         return helper.response(
           response,
           400,
@@ -54,26 +53,25 @@ module.exports = {
         const checkUser = await checkEmail(email);
 
         if (checkUser.length > 0) {
-          fs.unlink(`uploads/user/${request.file.filename}`, function (err) {
-            if (err) {
-              throw err;
-            } else console.log("Uploading image is canceled");
-          });
+          // fs.unlink(`uploads/user/${request.file.filename}`, function (err) {
+          //   if (err) {
+          //     throw err;
+          //   } else console.log("Uploading image is canceled");
+          // });
           return helper.response(response, 400, "Email has been registered");
         } else {
           const salt = bcrypt.genSaltSync(10);
           const encryptPassword = bcrypt.hashSync(password, salt);
           const setData = {
             user_name,
-            display_name,
-            first_name,
-            last_name,
-            user_photo: request.file.filename,
+            first_name: "",
+            last_name: "",
+            user_photo: "",
             email,
-            mobile,
-            gender,
-            address,
-            member_card_status,
+            mobile: "",
+            gender: "",
+            address: "",
+            member_card_status: "",
             date_account: new Date(),
             password: encryptPassword,
             user_role:
@@ -87,11 +85,12 @@ module.exports = {
         }
       }
     } catch (error) {
-      fs.unlink(`uploads/user/${request.file.filename}`, function (err) {
-        if (err) {
-          throw err;
-        } else console.log("Uploading image is canceled");
-      });
+      // fs.unlink(`uploads/user/${request.file.filename}`, function (err) {
+      //   if (err) {
+      //     throw err;
+      //   } else console.log("Uploading image is canceled");
+      // });
+      console.log(error);
       return helper.response(response, 400, "Bad Request", error);
     }
   },
@@ -141,7 +140,7 @@ module.exports = {
         user_name,
         email,
         password,
-        display_name,
+
         first_name,
         last_name,
         user_photo,
@@ -163,7 +162,7 @@ module.exports = {
         password === ""
           ? (password = userData[0].password)
           : (password = encryptPassword);
-        if (display_name === "") display_name = userData[0].display_name;
+
         if (first_name === "") first_name = userData[0].first_name;
         if (last_name === "") last_name = userData[0].last_name;
         if (req.file === undefined) {
@@ -189,7 +188,7 @@ module.exports = {
           user_name,
           email,
           password,
-          display_name,
+
           first_name,
           last_name,
           user_photo,

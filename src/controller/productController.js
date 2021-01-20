@@ -10,6 +10,7 @@ const {
   getProductCountSearching,
   getProductCountCategory,
   getProductByCategoryModel,
+  getProductCountId,
 } = require("../model/productModel");
 
 const helper = require("../helper/response");
@@ -28,7 +29,6 @@ module.exports = {
         product_stock,
         image_src,
         product_description,
-        payment_method_id,
         delivery_method_id,
         size_id,
         delivery_start_hour,
@@ -43,7 +43,6 @@ module.exports = {
         req.file == undefined ||
         image_src == "" ||
         product_description == "" ||
-        payment_method_id == "" ||
         delivery_method_id == "" ||
         size_id == "" ||
         delivery_start_hour == "" ||
@@ -79,7 +78,6 @@ module.exports = {
             product_stock,
             image_src: req.file === undefined ? "" : req.file.filename,
             product_description,
-            payment_method_id,
             delivery_method_id,
             size_id,
             delivery_start_hour,
@@ -290,7 +288,6 @@ module.exports = {
         product_stock,
         image_src,
         product_description,
-        payment_method_id,
         delivery_method_id,
         size_id,
         delivery_start_hour,
@@ -298,9 +295,9 @@ module.exports = {
         discount_id,
       } = req.body;
 
-      const checkId = await getProductById(id);
-
-      if (checkId.length > 0) {
+      const totalproduct = await getProductCountId(id);
+      if (totalproduct > 0) {
+        const checkId = await getProductById(id);
         if (category_id === "") {
           category_id = checkId[0].category_id;
         }
@@ -328,9 +325,6 @@ module.exports = {
         if (product_description === "") {
           product_description = checkId[0].product_description;
         }
-        if (payment_method_id === "") {
-          payment_method_id = checkId[0].payment_method_id;
-        }
         if (delivery_method_id === "") {
           delivery_method_id = checkId[0].delivery_method_id;
         }
@@ -354,7 +348,6 @@ module.exports = {
           product_stock,
           image_src,
           product_description,
-          payment_method_id,
           delivery_method_id,
           size_id,
           delivery_start_hour,
@@ -366,11 +359,13 @@ module.exports = {
         const result = await patchProduct(setData, id);
         return helper.response(res, 200, `Success update product`, result);
       } else {
-        fs.unlink(`uploads/${req.file.filename}`, function (err) {
-          if (err) {
-            throw err;
-          } else console.log("Uploading image is canceled");
-        });
+        if (req.file !== undefined) {
+          fs.unlink(`uploads/${req.file.filename}`, function (err) {
+            if (err) {
+              throw err;
+            } else console.log("Uploading image is canceled");
+          });
+        }
         return helper.response(res, 404, `Product By Id : ${id} Not Found`);
       }
     } catch (error) {
@@ -387,11 +382,11 @@ module.exports = {
     try {
       const { id } = req.params;
 
-      const checkId = await getProductById(id);
+      const totalproduct = await getProductCountId(id);
 
-      const image = checkId[0].image_src;
-
-      if (checkId.length > 0) {
+      if (totalproduct > 0) {
+        const checkId = await getProductById(id);
+        const image = checkId[0].image_src;
         if (image !== "") {
           fs.unlink(`uploads/${image}`, function (err) {
             if (err) {

@@ -4,6 +4,7 @@ const {
   patchPromo,
   deletePromoModel,
   getPromoCountModel,
+  getAllPromoModel,
 } = require("../model/promoModel");
 
 const helper = require("../helper/response");
@@ -19,6 +20,9 @@ module.exports = {
         end_coupon,
         coupon_discount,
         product_id,
+        promo_size,
+        promo_deliv_method,
+        promo_description,
       } = req.body;
 
       const setDataPromo = await {
@@ -27,6 +31,10 @@ module.exports = {
         end_coupon,
         coupon_discount,
         product_id,
+        promo_size,
+        promo_deliv_method,
+        promo_description,
+        promo_created_at: new Date(),
       };
       const result = await postCoupon(setDataPromo);
 
@@ -59,6 +67,9 @@ module.exports = {
         end_coupon,
         coupon_discount,
         product_id,
+        promo_size,
+        promo_deliv_method,
+        promo_description,
       } = req.body;
 
       const countId = await getPromoCountModel(id);
@@ -86,6 +97,10 @@ module.exports = {
           end_coupon,
           coupon_discount,
           product_id,
+          promo_size,
+          promo_deliv_method,
+          promo_description,
+          promo_updated_at: new Date(),
         };
         const result = await patchPromo(setData, id);
         return helper.response(res, 200, `Success update promo`, result);
@@ -112,6 +127,14 @@ module.exports = {
         return helper.response(res, 404, `Promo Is Not Available`);
       }
     } catch {
+      return helper.response(res, 400, "Bad Request", error);
+    }
+  },
+  getAllPromo: async (req, res) => {
+    try {
+      const result = await getAllPromoModel();
+      return helper.response(res, 200, "Success Get Promo", result);
+    } catch (error) {
       return helper.response(res, 400, "Bad Request", error);
     }
   },
