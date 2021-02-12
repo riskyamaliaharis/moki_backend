@@ -98,39 +98,53 @@ module.exports = {
     try {
       const { email, password } = request.body;
 
-      const checkDataUser = await checkEmail(email);
-
-      if (checkDataUser.length > 0) {
-        const checkPassword = bcrypt.compareSync(
-          password,
-          checkDataUser[0].password
-        );
-        if (checkPassword) {
-          const { user_id, user_name, email, user_role } = checkDataUser[0];
-          const payload = { user_id, user_name, email, user_role };
-          const token = jwt.sign(payload, "privacy", { expiresIn: "3h" });
-          console.log(token);
-          const result = { ...payload, token };
-          const role = user_role === 1 ? "an admin" : "a customer";
+      if (email === "") {
+        if (password === "") {
           return helper.response(
             response,
-            200,
-            "Success Login as " + role,
-            result
+            404,
+            "Email and Password Cannot Empty"
           );
         } else {
-          return helper.response(response, 400, "Wrong Password", error);
+          return helper.response(response, 404, "Email Cannot Empty");
         }
+      } else if (password === "") {
+        return helper.response(response, 404, "Password Cannot Empty");
       } else {
-        return helper.response(
-          response,
-          400,
-          "Email/Account not registered",
-          error
-        );
+        const checkDataUser = await checkEmail(email);
+
+        if (checkDataUser.length > 0) {
+          const checkPassword = bcrypt.compareSync(
+            password,
+            checkDataUser[0].password
+          );
+
+          if (checkPassword) {
+            const { user_id, user_name, email, user_role } = checkDataUser[0];
+            const payload = { user_id, user_name, email, user_role };
+            const token = jwt.sign(payload, "privacy", { expiresIn: "3h" });
+            console.log(token);
+            const result = { ...payload, token };
+            const role = user_role === 1 ? "an admin" : "a customer";
+            return helper.response(
+              response,
+              200,
+              "Success Login as " + role,
+              result
+            );
+          } else {
+            return helper.response(response, 404, "Wrong Password");
+          }
+        } else {
+          return helper.response(
+            response,
+            404,
+            "Email/Account is not registered"
+          );
+        }
       }
     } catch (error) {
-      return helper.response(response, 400, "Bad Request", error);
+      return helper.response(response, 404, "Bad Request", error);
     }
   },
   updateUser: async (request, respons) => {
