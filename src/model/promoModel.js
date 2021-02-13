@@ -1,83 +1,86 @@
-const connection = require("../config/mysql");
+const connection = require('../config/mysql')
 
 module.exports = {
   postCoupon: (setDataPromo) => {
     return new Promise((resolve, reject) => {
       connection.query(
-        "INSERT INTO promo SET ?",
+        'INSERT INTO promo SET ?',
         setDataPromo,
         (error, result) => {
           if (!error) {
             const newResult = {
               promo_id: result.insertId,
-              ...setDataPromo,
-            };
-            resolve(newResult);
+              ...setDataPromo
+            }
+            resolve(newResult)
           } else {
-            reject(new Error(error));
+            reject(new Error(error))
           }
         }
-      );
-    });
+      )
+    })
   },
   getPromoByIdModel: (id) => {
     return new Promise((resolve, reject) => {
       connection.query(
-        "SELECT * FROM promo WHERE promo_id = ?",
+        'SELECT * FROM promo WHERE promo_id = ?',
         id,
         (error, result) => {
-          !error ? resolve(result) : reject(new Error(error));
+          !error ? resolve(result) : reject(new Error(error))
         }
-      );
-    });
+      )
+    })
   },
   getPromoCountModel: (id) => {
     return new Promise((resolve, reject) => {
       connection.query(
-        "SELECT COUNT(*) AS sum FROM promo WHERE promo_id = ?",
+        'SELECT COUNT(*) AS sum FROM promo WHERE promo_id = ?',
         id,
         (error, result) => {
-          const newResult = result[0].sum;
-          !error ? resolve(newResult) : reject(new Error(error));
+          const newResult = result[0].sum
+          !error ? resolve(newResult) : reject(new Error(error))
         }
-      );
-    });
+      )
+    })
   },
   patchPromo: (setData, id) => {
     return new Promise((resolve, reject) => {
       connection.query(
-        "UPDATE promo SET ? WHERE promo_id = ?",
+        'UPDATE promo SET ? WHERE promo_id = ?',
         [setData, id],
         (error, result) => {
           if (!error) {
             const newResult = {
               promo_id: id,
-              ...setData,
-            };
-            resolve(newResult);
+              ...setData
+            }
+            resolve(newResult)
           } else {
-            reject(new Error(error));
+            reject(new Error(error))
           }
         }
-      );
-    });
+      )
+    })
   },
   deletePromoModel: (id) => {
     return new Promise((resolve, reject) => {
       connection.query(
-        "DELETE FROM promo WHERE product_id = ?",
+        'DELETE FROM promo WHERE product_id = ?',
         id,
         (error, result) => {
-          !error ? resolve(result) : reject(new Error(error));
+          !error ? resolve(result) : reject(new Error(error))
         }
-      );
-    });
+      )
+    })
   },
   getAllPromoModel: () => {
     return new Promise((resolve, reject) => {
-      connection.query("SELECT * FROM promo", (error, result) => {
-        !error ? resolve(result) : reject(new Error(error));
-      });
-    });
-  },
-};
+      connection.query(
+        'SELECT promo.*, product.image_src, product.product_price FROM promo JOIN product WHERE promo.product_id=product.product_id',
+        (error, result) => {
+          !error ? resolve(result) : reject(new Error(error))
+        }
+      )
+    })
+  }
+}
