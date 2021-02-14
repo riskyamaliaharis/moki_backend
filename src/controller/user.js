@@ -57,7 +57,7 @@ module.exports = {
             to: email,
             subject: 'MOKI - Email Activation',
             html: ` <p>Finish Your Register By Activate Your Email</p>
-            <a href="${process.env.URL_FE}">
+            <a href="${process.env.URL_FE}verify/${keys}">
                 Click Here To Activate
               </a>`
           }
@@ -230,6 +230,8 @@ module.exports = {
   forgotPassword: async (request, response) => {
     try {
       const { email } = request.body
+      console.log(email)
+      console.log(request.body)
       const checkDataUser = await checkEmail(email)
       if (checkDataUser.length >= 1) {
         const keys = Math.round(Math.random() * 99967)
@@ -254,7 +256,7 @@ module.exports = {
           from: '"Moki 🍩" <mokifoodbeverage@gmail.com>',
           to: email,
           subject: 'MOKI - Forgot Password',
-          html: `<a href="${process.env.URL_FE}">
+          html: `<a href="${process.env.URL_FE}forgot/${keys}">
               Click Here To Change Your Password
             </a>`
         }
@@ -277,50 +279,80 @@ module.exports = {
   changePasswordForgot: async (request, response) => {
     try {
       const { key, newPassword, confirmPassword } = request.body
+      console.log('key' + key)
       if (newPassword !== confirmPassword) {
         return helper.response(response, 400, "Password doesn't match")
       } else {
+        console.log('1')
         const checkKey = await getUserByKey(key)
         if (checkKey.length < 1) {
-          return helper.response(response, 400, 'Please Resend Your Email')
+          console.log('2')
+          return helper.response(
+            response,
+            400,
+            'Something Wrong. Please Resend Your Email'
+          )
         } else {
-          const id = checkKey[0].user_id
-          const update = new Date() - checkKey[0].date_updated_account
-          const range = Math.floor(update / 1000 / 60)
-          if (range >= 4) {
-            const setData = {
-              user_key: 0,
-              date_updated_account: new Date()
-            }
-            await updateUserModel(setData, id)
-            return helper.response(
-              response,
-              400,
-              'Keys is expired. Please Resend Your Email'
-            )
+          console.log('3')
+
+          if (key == 0) {
+            console.log('4')
+            return helper.response(response, 400, 'Invalid Key')
           } else {
-            const salt = bcrypt.genSaltSync(7)
-            const encryptPassword = bcrypt.hashSync(newPassword, salt)
-            const setData = {
-              user_password: encryptPassword,
-              user_key: 0,
-              date_updated_account: new Date()
+            console.log('5')
+            const id = checkKey[0].user_id
+            const update = new Date() - checkKey[0].date_updated_account
+            const range = Math.floor(update / 1000 / 60)
+            console.log(range)
+            if (range >= 4) {
+              console.log('6')
+              const setData = {
+                user_key: 0,
+                date_updated_account: new Date()
+              }
+              console.log('7')
+              await updateUserModel(setData, id)
+              return helper.response(
+                response,
+                400,
+                'Keys is expired. Please Resend Your Email'
+              )
+            } else {
+              console.log('8')
+              const salt = bcrypt.genSaltSync(7)
+              const encryptPassword = bcrypt.hashSync(newPassword, salt)
+              const setData = {
+                password: encryptPassword,
+                user_key: 0,
+                date_updated_account: new Date()
+              }
+              console.log('9')
+              console.log(setData)
+              console.log(id)
+              await updateUserModel(setData, id)
+              return helper.response(
+                response,
+                200,
+                'Your Password has been changed. Please login'
+              )
             }
-            await updateUserModel(setData, id)
-            return helper.response(response, 200, 'Success Change Password ')
           }
         }
       }
     } catch (error) {
+      console.log('10')
       return helper.response(response, 400, 'Bad Request', error)
     }
   },
   updateStatusAfterActivateEmail: async (request, response) => {
     try {
       const { keys } = request.params
+      console.log(keys)
       const user = await getUserByKey(keys)
-      if (user.length < 1) {
-        return helper.response(response, 400, 'Wrong Key')
+      if (keys == false || user.length < 1) {
+        return helper.response(response, 400, 'Invalid Key')
+      } else if (typeof keys !== 'number') {
+        return helper.response(response, 400, 'Invalid Key')
       } else {
         const id = user[0].user_id
         const setData = {
