@@ -54,12 +54,11 @@ module.exports = {
 
           const mailOptions = {
             from: '"Moki 🍩" <mokifoodbeverage@gmail.com>',
-            to: email,
+            to: `${email}`,
             subject: 'MOKI - Email Activation',
-            html: ` <p>Finish Your Register By Activate Your Email</p>
-            <a href="${process.env.URL_FE}verify/${keys}">
-                Click Here To Activate
-              </a>`
+            html: `<h5>Finish Your Register By Activate Your Email</h5>
+            <a href="${process.env.URL_FE}verify/${keys}">Click Here To Activate</a>
+            <p><b>Please note</b>: If you cannot access this link, please resend your email</p>`
           }
 
           await transporter.sendMail(mailOptions, function (error, info) {
@@ -254,11 +253,10 @@ module.exports = {
 
         const mailOptions = {
           from: '"Moki 🍩" <mokifoodbeverage@gmail.com>',
-          to: email,
+          to: `${email}`,
           subject: 'MOKI - Forgot Password',
-          html: `<a href="${process.env.URL_FE}forgot/${keys}">
-              Click Here To Change Your Password
-            </a>`
+          html: `<a href ="${process.env.URL_FE}forgot/${keys}">Click Here To Set Your Password</a>
+          <p><b>Please note</b>: If you cannot access this link, please resend your email</p>`
         }
         await transporter.sendMail(mailOptions, function (error, info) {
           if (error) {
@@ -279,7 +277,6 @@ module.exports = {
   changePasswordForgot: async (request, response) => {
     try {
       const { key, newPassword, confirmPassword } = request.body
-      console.log('key' + key)
       if (newPassword !== confirmPassword) {
         return helper.response(response, 400, "Password doesn't match")
       } else {
@@ -304,7 +301,7 @@ module.exports = {
             const update = new Date() - checkKey[0].date_updated_account
             const range = Math.floor(update / 1000 / 60)
             console.log(range)
-            if (range >= 4) {
+            if (range >= 30) {
               console.log('6')
               const setData = {
                 user_key: 0,
@@ -350,8 +347,6 @@ module.exports = {
       console.log(keys)
       const user = await getUserByKey(keys)
       if (keys == false || user.length < 1) {
-        return helper.response(response, 400, 'Invalid Key')
-      } else if (typeof keys !== 'number') {
         return helper.response(response, 400, 'Invalid Key')
       } else {
         const id = user[0].user_id

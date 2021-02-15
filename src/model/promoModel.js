@@ -23,7 +23,7 @@ module.exports = {
   getPromoByIdModel: (id) => {
     return new Promise((resolve, reject) => {
       connection.query(
-        'SELECT * FROM promo WHERE promo_id = ?',
+        'SELECT * FROM promo WHERE product_id = ?',
         id,
         (error, result) => {
           !error ? resolve(result) : reject(new Error(error))
@@ -76,7 +76,7 @@ module.exports = {
   getAllPromoModel: () => {
     return new Promise((resolve, reject) => {
       connection.query(
-        'SELECT promo.*, product.image_src, product.product_price FROM promo JOIN product WHERE promo.product_id=product.product_id',
+        'SELECT promo.*, product.image_src, product.product_price, product.product_name FROM promo JOIN product WHERE promo.product_id=product.product_id ORDER BY promo.start_coupon DESC',
         (error, result) => {
           !error ? resolve(result) : reject(new Error(error))
         }
