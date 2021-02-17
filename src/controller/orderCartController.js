@@ -9,7 +9,9 @@ const {
   totalOrderModel,
   markAsDoneModel,
   revenuePerMonthModel,
-  revenuePerDayModel
+  revenuePerDayModel,
+  getHistoryByIdUser,
+  getOrderListByIdOrder
 } = require('../model/orderCartModel')
 
 const helper = require('../helper/response')
@@ -23,15 +25,24 @@ module.exports = {
       const checkInvoice = await checkOrderInvoice(order_invoice)
 
       if (checkInvoice < 1) {
-        const setDataOrder = {
-          order_invoice,
-          subtotal,
-          status: 0,
-          user_id,
-          order_created_at: new Date()
+        if (subtotal) {
+          const setDataOrder = {
+            order_invoice,
+            subtotal,
+            status: 0,
+            user_id,
+            order_created_at: new Date()
+          }
+          const result = await postOrder(setDataOrder)
+          return helper.response(
+            res,
+            200,
+            'Thank you. Please wait for your order',
+            result
+          )
+        } else {
+          return helper.response(res, 400, 'No Order')
         }
-        const result = await postOrder(setDataOrder)
-        return helper.response(res, 200, 'Success Post Order', result)
       } else {
         return helper.response(res, 400, 'INVOICE HAS BEEN USED')
       }
@@ -74,6 +85,28 @@ module.exports = {
       return helper.response(res, 400, 'Bad Request', error)
     }
   },
+  getHistoryByIdUser: async (req, res) => {
+    try {
+      const { id } = req.params
+      const result = await getHistoryByIdUser(id)
+      console.log('masuk1')
+      if (result.length > 0) {
+        console.log('masuk2')
+        for (let i = 0; i < result.length; i++) {
+          console.log('masuk3' + result[i].order_id)
+          result[i].detail = await getOrderListByIdOrder(result[i].order_id)
+          console.log('masuk4')
+        }
+        return helper.response(res, 200, 'Get Success', result)
+      } else {
+        console.log('masuk5')
+        return helper.response(res, 404, `No Data`)
+      }
+    } catch (error) {
+      console.log(error)
+      return helper.response(res, 400, 'Bad Request', error)
+    }
+  },
   deleteHistory: async (req, res) => {
     try {
       const { id } = req.params
@@ -91,20 +124,26 @@ module.exports = {
   },
   todaysIncome: async (req, res) => {
     try {
-      const result = await todaysIncomeModel()
+      let result = await todaysIncomeModel()
+      console.log('today')
+      console.log(result)
+      if (result === null) result = 0
       return helper.response(
         res,
         200,
         "Success Get Data of Today's Income",
         result
       )
-    } catch {
+    } catch (error) {
+      console.log(error)
       return helper.response(res, 400, 'Bad Request', error)
     }
   },
   yearsIncome: async (req, res) => {
     try {
       const result = await yearsIncomeModel()
+
+      if (result === null) result = 0
 
       return helper.response(
         res,
@@ -119,6 +158,7 @@ module.exports = {
   totalOrder: async (req, res) => {
     try {
       const result = await totalOrderModel()
+      if (result === null) result = 0
       return helper.response(
         res,
         200,
@@ -140,7 +180,20 @@ module.exports = {
   },
   revenuePerMonth: async (req, res) => {
     try {
-      const result = await revenuePerMonthModel()
+      const mo = await revenuePerMonthModel()
+      let result = []
+      for (let i = 0; i < 12; i++) {
+        let dat = {
+          day: i + 1,
+          subtotal: 0
+        }
+        let item = mo.find((element) => element.month == i + 1)
+        if (item === undefined) {
+          result.push(dat)
+        } else {
+          result.push(item)
+        }
+      }
       return helper.response(res, 200, 'Success Get Revenue Per Month', result)
     } catch {
       return helper.response(res, 400, 'Bad Request', error)
@@ -148,9 +201,25 @@ module.exports = {
   },
   revenuePerDay: async (req, res) => {
     try {
-      const result = await revenuePerDayModel()
+      const a = await revenuePerDayModel()
+      let result = []
+
+      for (let i = 0; i < 7; i++) {
+        let dat = {
+          day: i + 1,
+          subtotal: 0
+        }
+        let item = a.find((element) => element.day == i + 1)
+        if (item === undefined) {
+          result.push(dat)
+        } else {
+          result.push(item)
+        }
+      }
+
       return helper.response(res, 200, 'Success Get Revenue Per Day', result)
-    } catch {
+    } catch (error) {
+      console.log(error)
       return helper.response(res, 400, 'Bad Request', error)
     }
   }

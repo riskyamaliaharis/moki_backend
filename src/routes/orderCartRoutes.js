@@ -1,7 +1,8 @@
-const router = require("express").Router();
+const router = require('express').Router()
 const {
   createOrder,
   getHistoryById,
+  getHistoryByIdUser,
   deleteHistory,
   createOrderHistory,
   todaysIncome,
@@ -9,33 +10,34 @@ const {
   totalOrder,
   markAsDone,
   revenuePerMonth,
-  revenuePerDay,
-} = require("../controller/orderCartController");
-const { authorization, authorizationforAdmin } = require("../middleware/auth");
+  revenuePerDay
+} = require('../controller/orderCartController')
+const { authorization, authorizationforAdmin } = require('../middleware/auth')
 const {
   getOrderListByIdRedis,
-  clearDataOrderHistoryRedis,
-} = require("../middleware/redis");
+  clearDataOrderHistoryRedis
+} = require('../middleware/redis')
 
-router.post("/", authorization, clearDataOrderHistoryRedis, createOrder);
+router.get('/history/:id', getHistoryByIdUser)
+router.post('/', authorization, clearDataOrderHistoryRedis, createOrder)
 router.post(
-  "/history",
+  '/history',
   authorization,
   clearDataOrderHistoryRedis,
   createOrderHistory
-);
-router.get("/:id", authorization, getOrderListByIdRedis, getHistoryById);
-router.delete("/:id", authorization, clearDataOrderHistoryRedis, deleteHistory);
-router.get("/data/todaysincome", authorization, todaysIncome);
-router.get("/data/yearsincome", authorization, yearsIncome);
-router.get("/data/totalorder", authorization, totalOrder);
+)
+router.get('/:id', authorization, getOrderListByIdRedis, getHistoryById)
+router.delete('/:id', authorization, clearDataOrderHistoryRedis, deleteHistory)
+router.get('/data/todaysincome', authorization, todaysIncome)
+router.get('/data/yearsincome', authorization, yearsIncome)
+router.get('/data/totalorder', authorization, totalOrder)
 router.patch(
-  "/:id",
+  '/:id',
   authorizationforAdmin,
   clearDataOrderHistoryRedis,
   markAsDone
-);
-router.get("/chart/revenuepermonth", authorization, revenuePerMonth);
-router.get("/chart/revenueperday", authorization, revenuePerDay);
+)
+router.get('/chart/revenuepermonth', authorization, revenuePerMonth)
+router.get('/chart/revenueperday', authorization, revenuePerDay)
 
-module.exports = router;
+module.exports = router

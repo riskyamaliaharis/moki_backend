@@ -1,6 +1,6 @@
 <h1 align="center">ExpressJS - MOKI FOOD AND BEVERAGE</h1>
 
-## background_projek.
+## Project Background.
 
 Moki Food and Beverage is online foods and beverages ordering application.
 This is a web based application, so that you do not need to download it first.
@@ -44,6 +44,7 @@ DB_PASS= // Database Password
 DB_NAME=moki_food_beverage // Table Name
 DB_TIMEZONE=UTC // Database Timezone
 port=3000 // Port
+URL_FE =http://localhost:8080/
 ```
 
 ## License
