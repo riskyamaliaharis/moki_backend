@@ -6,12 +6,13 @@ const {
   updateUser,
   forgotPassword,
   changePasswordForgot,
-  updateStatusAfterActivateEmail
+  updateStatusAfterActivateEmail,
+  getProfile
 } = require('../controller/user')
-
+router.get('/profile/:id', getProfile)
 router.post('/register', uploadPhoto, userRegister)
 router.post('/login', loginUser)
-router.post('/update', uploadPhoto, updateUser)
+router.patch('/update/:id', uploadPhoto, updateUser)
 router.post('/forgot', forgotPassword)
 router.patch('/changepasswordforgot', changePasswordForgot)
 router.patch('/updatestatus/:keys', updateStatusAfterActivateEmail)
