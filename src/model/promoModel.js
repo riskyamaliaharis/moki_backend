@@ -62,10 +62,21 @@ module.exports = {
       )
     })
   },
+  getPromoByIdProduct: (product_id) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        'SELECT * FROM promo JOIN product ON promo.product_id=product.product_id WHERE product.product_id = ?',
+        product_id,
+        (error, result) => {
+          !error ? resolve(result) : reject(new Error(error))
+        }
+      )
+    })
+  },
   deletePromoModel: (id) => {
     return new Promise((resolve, reject) => {
       connection.query(
-        'DELETE FROM promo WHERE product_id = ?',
+        'DELETE FROM promo WHERE promo_id = ?',
         id,
         (error, result) => {
           !error ? resolve(result) : reject(new Error(error))

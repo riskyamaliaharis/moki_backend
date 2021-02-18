@@ -4,7 +4,8 @@ const {
   patchPromo,
   deletePromoModel,
   getPromoCountModel,
-  getAllPromoModel
+  getAllPromoModel,
+  getPromoByIdProduct
 } = require('../model/promoModel')
 
 const helper = require('../helper/response')
@@ -69,6 +70,20 @@ module.exports = {
         return helper.response(res, 404, `Promo By Id : ${id} Not Found`)
       }
     } catch (error) {
+      return helper.response(res, 400, 'Bad Request', error)
+    }
+  },
+  getPromoByIdProduct: async (req, res) => {
+    try {
+      const { id } = req.params
+      const result = await getPromoByIdProduct(id)
+      if (result.length > 0) {
+        return helper.response(res, 200, 'Success Get Promo By Id', result)
+      } else {
+        return helper.response(res, 404, `Promo By Id : ${id} Not Found`)
+      }
+    } catch (error) {
+      console.log(error)
       return helper.response(res, 400, 'Bad Request', error)
     }
   },
