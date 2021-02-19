@@ -1,8 +1,8 @@
 <h1 align='center'>ExpressJS - MOKI FOOD AND BEVERAGE</h1>
   <p align="center">
-    <a href="https://github.com/riskyamaliaharis/moki_food_and_beverage_project/issues">Report Bug</a>
+    <a href="https://github.com/riskyamaliaharis/moki_backend/issues">Report Bug</a>
     ·
-    <a href="https://github.com/riskyamaliaharis/moki_food_and_beverage_project/pulls">Request Feature</a>
+    <a href="https://github.com/riskyamaliaharis/moki_backend/pulls">Request Feature</a>
   </p>
 
 ## About The Project
