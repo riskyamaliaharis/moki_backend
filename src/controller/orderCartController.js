@@ -11,7 +11,8 @@ const {
   revenuePerMonthModel,
   revenuePerDayModel,
   getHistoryByIdUser,
-  getOrderListByIdOrder
+  getOrderListByIdOrder,
+  getAllHistory
 } = require('../model/orderCartModel')
 
 const helper = require('../helper/response')
@@ -216,6 +217,14 @@ module.exports = {
       return helper.response(res, 200, 'Success Get Revenue Per Day', result)
     } catch (error) {
       console.log(error)
+      return helper.response(res, 400, 'Bad Request', error)
+    }
+  },
+  getAllHistory: async (req, res) => {
+    try {
+      const result = await getAllHistory()
+      return helper.response(res, 200, 'Success Get Data', result)
+    } catch {
       return helper.response(res, 400, 'Bad Request', error)
     }
   }

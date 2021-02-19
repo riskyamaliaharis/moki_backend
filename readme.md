@@ -1,7 +1,5 @@
 <h1 align='center'>ExpressJS - MOKI FOOD AND BEVERAGE</h1>
   <p align="center">
-    <a href="">View Demo</a>
-    ·
     <a href="https://github.com/riskyamaliaharis/moki_food_and_beverage_project/issues">Report Bug</a>
     ·
     <a href="https://github.com/riskyamaliaharis/moki_food_and_beverage_project/pulls">Request Feature</a>
@@ -17,27 +15,29 @@ It would be easier. The Backend of Moki Food an Beverage Project is built using 
 
 ## Built With
 
-[![Vue](https://img.shields.io/badge/Vue-v2.6.11-green)](https://github.com/vuejs/vue)
-[![Bootstrap](https://img.shields.io/badge/Bootstrap-v4.5.x-blue)](https://github.com/bootstrap-vue/bootstrap-vue)
+[![Express.js](https://img.shields.io/badge/Express.js-4.x-orange.svg?style=rounded-square)](https://expressjs.com/en/starter/installing.html)
+[![Node.js](https://img.shields.io/badge/Node.js-v.12.13-green.svg?style=rounded-square)](https://nodejs.org/)
 
 ## Requirements
 
 1. <a href="https://nodejs.org/en/download/">Node Js</a>
-2. Node_modules `npm install` or `yarn install`
-3. Backend API Moki [`here`](https://github.com/riskyamaliaharis/moki_backend)
+2. Node_modules
+3. <a href="https://www.getpostman.com/">Postman</a>
+4. Web Server (ex. localhost)
 
-## Optional
+## How to run the app ?
 
-1. <a href="https://documenter.getpostman.com/view/13454431/TVsoGpzz">Postman, for ensure the endpoint is running well</a>
-
-## Getting Started
-
-1. Download this Project or you can type `git clone https://github.com/riskyamaliaharis/moki_food_and_beverage_project.git`
-2. Open app's directory in CMD or Terminal
-3. Type `npm install` or `yarn install`
-4. Add .env file at root folder project
+1. Open app's directory in CMD or Terminal
+2. Type `npm install`
+3. Make new file a called **.env**, set up first [here](#set-up-env-file)
+4. Turn on Web Server and MySQL can using Third-party tool like xampp, etc.
+5. Create a database with the name #nama_database, and Import file sql to **phpmyadmin**
+6. Open Postman desktop application or Chrome web app extension that has installed before
+7. Choose HTTP Method and enter request url.(ex. localhost:3000/)
+8. You can see all the end point [here](https://documenter.getpostman.com/view/13454431/TVsoGpzz)
 
 ```
+
 DB_HOST=localhost // Database host
 DB_USER=root // Database Username
 DB_PASS= // Database Password
@@ -48,11 +48,6 @@ URL_FE =http://localhost:8080/
 ```
 
 5. Type `npm run serve`
-
-## Acknowledgements
-
-- [Axios](https://www.npmjs.com/package/axios)
-- [Vuex](https://vuex.vuejs.org/)
 
 ## License
 

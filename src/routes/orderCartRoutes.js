@@ -10,7 +10,8 @@ const {
   totalOrder,
   markAsDone,
   revenuePerMonth,
-  revenuePerDay
+  revenuePerDay,
+  getAllHistory
 } = require('../controller/orderCartController')
 const { authorization, authorizationforAdmin } = require('../middleware/auth')
 const {
@@ -39,5 +40,6 @@ router.patch(
 )
 router.get('/chart/revenuepermonth', authorization, revenuePerMonth)
 router.get('/chart/revenueperday', authorization, revenuePerDay)
+router.get('/data/history/all', authorization, getAllHistory)
 
 module.exports = router
