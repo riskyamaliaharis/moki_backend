@@ -130,8 +130,6 @@ module.exports = {
         'SELECT * FROM product JOIN size ON product.size_id=size.size_id JOIN delivery_method ON product.delivery_method_id = delivery_method.delivery_method_id  WHERE product_id = ?',
         id,
         (error, result) => {
-          console.log('error  ' + error)
-          console.log('result  ' + result)
           !error ? resolve(result) : reject(new Error(error))
         }
       )

@@ -89,17 +89,13 @@ module.exports = {
     try {
       const { id } = req.params
       const result = await getHistoryByIdUser(id)
-      console.log('masuk1')
+
       if (result.length > 0) {
-        console.log('masuk2')
         for (let i = 0; i < result.length; i++) {
-          console.log('masuk3' + result[i].order_id)
           result[i].detail = await getOrderListByIdOrder(result[i].order_id)
-          console.log('masuk4')
         }
         return helper.response(res, 200, 'Get Success', result)
       } else {
-        console.log('masuk5')
         return helper.response(res, 404, `No Data`)
       }
     } catch (error) {
@@ -125,7 +121,7 @@ module.exports = {
   todaysIncome: async (req, res) => {
     try {
       let result = await todaysIncomeModel()
-      console.log('today')
+
       console.log(result)
       if (result === null) result = 0
       return helper.response(

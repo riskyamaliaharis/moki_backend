@@ -33,7 +33,7 @@ module.exports = {
       } else {
         const checkUser = await checkEmail(email)
         const keys = Math.round(Math.random() * 99978)
-        console.log('keys' + keys)
+
         if (checkUser.length > 0) {
           return helper.response(response, 400, 'Email has been registered')
         } else {
@@ -74,10 +74,8 @@ module.exports = {
 
           await transporter.sendMail(mailOptions, function (error, info) {
             if (error) {
-              console.log(error)
               return helper.response(response, 400, 'Email is not sent !')
             } else {
-              console.log(info)
               return helper.response(response, 200, 'Email has been sent !')
             }
           })
@@ -90,7 +88,6 @@ module.exports = {
         }
       }
     } catch (error) {
-      console.log(error)
       return helper.response(response, 400, 'Bad Request', error)
     }
   },
@@ -123,7 +120,6 @@ module.exports = {
             const { user_id, user_name, email, user_role } = checkDataUser[0]
             const payload = { user_id, user_name, email, user_role }
             const token = jwt.sign(payload, 'privacy', { expiresIn: '3h' })
-            console.log(token)
             const result = { ...payload, token }
             const role = user_role === 1 ? 'an admin' : 'a customer'
             return helper.response(
@@ -163,7 +159,6 @@ module.exports = {
       } = request.body
       const countDataUser = await countDataId(id)
       const userData = await checkDataId(id)
-      console.log(countDataUser)
       if (countDataUser > 0) {
         if (user_name === '' || user_name === null)
           user_name = userData[0].user_name
@@ -222,7 +217,6 @@ module.exports = {
         return helper.response(response, 400, 'Data is not found')
       }
     } catch (error) {
-      console.log(error)
       fs.unlink(`uploads/user/${request.file.filename}`, function (err) {
         if (err) {
           throw err
@@ -234,12 +228,11 @@ module.exports = {
   forgotPassword: async (request, response) => {
     try {
       const { email } = request.body
-      console.log(email)
-      console.log(request.body)
+
       const checkDataUser = await checkEmail(email)
       if (checkDataUser.length >= 1) {
         const keys = Math.round(Math.random() * 99967)
-        console.log(keys)
+
         const setData = {
           user_key: keys,
           date_updated_account: new Date()
@@ -265,10 +258,8 @@ module.exports = {
         }
         await transporter.sendMail(mailOptions, function (error, info) {
           if (error) {
-            console.log(error)
             return helper.response(response, 400, 'Email is not sent !')
           } else {
-            console.log(info)
             return helper.response(response, 200, 'Email has been sent !')
           }
         })
@@ -285,34 +276,27 @@ module.exports = {
       if (newPassword !== confirmPassword) {
         return helper.response(response, 400, "Password doesn't match")
       } else {
-        console.log('1')
         const checkKey = await getUserByKey(key)
         if (checkKey.length < 1) {
-          console.log('2')
           return helper.response(
             response,
             400,
             'Something Wrong. Please Resend Your Email'
           )
         } else {
-          console.log('3')
-
           if (key == 0) {
-            console.log('4')
             return helper.response(response, 400, 'Invalid Key')
           } else {
-            console.log('5')
             const id = checkKey[0].user_id
             const update = new Date() - checkKey[0].date_updated_account
             const range = Math.floor(update / 1000 / 60)
-            console.log(range)
+
             if (range >= 30) {
-              console.log('6')
               const setData = {
                 user_key: 0,
                 date_updated_account: new Date()
               }
-              console.log('7')
+
               await updateUserModel(setData, id)
               return helper.response(
                 response,
@@ -320,7 +304,6 @@ module.exports = {
                 'Keys is expired. Please Resend Your Email'
               )
             } else {
-              console.log('8')
               const salt = bcrypt.genSaltSync(7)
               const encryptPassword = bcrypt.hashSync(newPassword, salt)
               const setData = {
@@ -328,9 +311,7 @@ module.exports = {
                 user_key: 0,
                 date_updated_account: new Date()
               }
-              console.log('9')
-              console.log(setData)
-              console.log(id)
+
               await updateUserModel(setData, id)
               return helper.response(
                 response,
@@ -342,14 +323,13 @@ module.exports = {
         }
       }
     } catch (error) {
-      console.log('10')
       return helper.response(response, 400, 'Bad Request', error)
     }
   },
   updateStatusAfterActivateEmail: async (request, response) => {
     try {
       const { keys } = request.params
-      console.log(keys)
+
       const user = await getUserByKey(keys)
       if (keys == false || user.length < 1) {
         return helper.response(response, 400, 'Invalid Key')
