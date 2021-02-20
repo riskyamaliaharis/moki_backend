@@ -187,7 +187,7 @@ module.exports = {
   getAllHistory: () => {
     return new Promise((resolve, reject) => {
       connection.query(
-        'SELECT order_cart JOIN user ON order_cart.user_id = user.user_id',
+        'SELECT * FROM order_cart JOIN user ON order_cart.user_id = user.user_id',
         (error, result) => {
           !error ? resolve(result) : reject(new Error(error))
         }

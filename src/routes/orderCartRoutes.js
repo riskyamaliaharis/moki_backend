@@ -40,6 +40,6 @@ router.patch(
 )
 router.get('/chart/revenuepermonth', authorization, revenuePerMonth)
 router.get('/chart/revenueperday', authorization, revenuePerDay)
-router.get('/data/history/all', authorization, getAllHistory)
+router.get('/data/history/all', getAllHistory)
 
 module.exports = router

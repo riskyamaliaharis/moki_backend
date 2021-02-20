@@ -222,9 +222,18 @@ module.exports = {
   },
   getAllHistory: async (req, res) => {
     try {
+      console.log('masuk')
       const result = await getAllHistory()
-      return helper.response(res, 200, 'Success Get Data', result)
-    } catch {
+
+      if (result.length > 0) {
+        for (let i = 0; i < result.length; i++) {
+          result[i].detail = await getOrderListByIdOrder(result[i].order_id)
+        }
+        return helper.response(res, 200, 'Success Get Data', result)
+      } else {
+        return helper.response(res, 404, `No Data`)
+      }
+    } catch (error) {
       return helper.response(res, 400, 'Bad Request', error)
     }
   }
