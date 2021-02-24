@@ -187,7 +187,18 @@ module.exports = {
   getAllHistory: () => {
     return new Promise((resolve, reject) => {
       connection.query(
-        'SELECT * FROM order_cart JOIN user ON order_cart.user_id = user.user_id',
+        'SELECT * FROM order_cart JOIN user ON order_cart.user_id = user.user_id WHERE hide_status = 0',
+        (error, result) => {
+          !error ? resolve(result) : reject(new Error(error))
+        }
+      )
+    })
+  },
+  patchStatusShow: (orderId) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        'UPDATE order_cart SET hide_status = 1 WHERE order_id = ?',
+        orderId,
         (error, result) => {
           !error ? resolve(result) : reject(new Error(error))
         }

@@ -12,7 +12,8 @@ const {
   revenuePerDayModel,
   getHistoryByIdUser,
   getOrderListByIdOrder,
-  getAllHistory
+  getAllHistory,
+  patchStatusShow
 } = require('../model/orderCartModel')
 
 const helper = require('../helper/response')
@@ -181,7 +182,7 @@ module.exports = {
       let result = []
       for (let i = 0; i < 12; i++) {
         let dat = {
-          day: i + 1,
+          month: i + 1,
           subtotal: 0
         }
         let item = mo.find((element) => element.month == i + 1)
@@ -222,7 +223,6 @@ module.exports = {
   },
   getAllHistory: async (req, res) => {
     try {
-      console.log('masuk')
       const result = await getAllHistory()
 
       if (result.length > 0) {
@@ -234,6 +234,15 @@ module.exports = {
         return helper.response(res, 404, `No Data`)
       }
     } catch (error) {
+      return helper.response(res, 400, 'Bad Request', error)
+    }
+  },
+  patchStatusShow: async (req, res) => {
+    try {
+      const { orderId } = req.params
+      const result = await patchStatusShow(orderId)
+      return helper.response(res, 200, 'Delete Success', result)
+    } catch {
       return helper.response(res, 400, 'Bad Request', error)
     }
   }

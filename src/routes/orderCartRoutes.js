@@ -11,7 +11,8 @@ const {
   markAsDone,
   revenuePerMonth,
   revenuePerDay,
-  getAllHistory
+  getAllHistory,
+  patchStatusShow
 } = require('../controller/orderCartController')
 const { authorization, authorizationforAdmin } = require('../middleware/auth')
 const {
@@ -41,5 +42,6 @@ router.patch(
 router.get('/chart/revenuepermonth', authorization, revenuePerMonth)
 router.get('/chart/revenueperday', authorization, revenuePerDay)
 router.get('/data/history/all', getAllHistory)
+router.patch('/delete/:orderId', authorization, patchStatusShow)
 
 module.exports = router
