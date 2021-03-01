@@ -42,6 +42,11 @@ router.patch(
 router.get('/chart/revenuepermonth', authorization, revenuePerMonth)
 router.get('/chart/revenueperday', authorization, revenuePerDay)
 router.get('/data/history/all', getAllHistory)
-router.patch('/delete/:orderId', authorization, patchStatusShow)
+router.patch(
+  '/delete/:orderId',
+  authorization,
+  clearDataOrderHistoryRedis,
+  patchStatusShow
+)
 
 module.exports = router

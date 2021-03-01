@@ -85,6 +85,7 @@ module.exports = {
         'SELECT order_cart.order_invoice, product.product_name, product.product_price, order_history.qty, order_history.total FROM order_history JOIN product ON order_history.product_id = product.product_id JOIN order_cart ON order_cart.order_id = order_history.order_id WHERE order_cart.order_id = ?',
         id,
         (error, result) => {
+          console.log(error)
           !error ? resolve(result) : reject(new Error(error))
         }
       )
@@ -93,7 +94,7 @@ module.exports = {
   getHistoryByIdUser: (id) => {
     return new Promise((resolve, reject) => {
       connection.query(
-        'SELECT order_cart.*, user.user_name FROM `order_cart` JOIN user ON order_cart.user_id = user.user_id WHERE order_cart.user_id=?',
+        'SELECT order_cart.*, user.user_name FROM `order_cart` JOIN user ON order_cart.user_id = user.user_id WHERE order_cart.user_id=? AND order_cart.hide_status=0',
         id,
         (error, result) => {
           !error ? resolve(result) : reject(new Error(error))
@@ -169,6 +170,7 @@ module.exports = {
       connection.query(
         'SELECT DAYOFWEEK(order_created_at) AS day, SUM(subtotal) AS subtotal FROM order_cart WHERE YEARWEEK(order_created_at) = YEARWEEK(CURDATE()) GROUP BY DATE(order_created_at)',
         (error, result) => {
+          console.log(error)
           !error ? resolve(result) : reject(new Error(error))
         }
       )
@@ -179,6 +181,7 @@ module.exports = {
       connection.query(
         'SELECT MONTH(order_created_at) AS month, SUM(subtotal) AS subtotal FROM order_cart WHERE YEAR(order_created_at) = YEAR(NOW()) GROUP BY MONTH(order_created_at)',
         (error, result) => {
+          console.log(error)
           !error ? resolve(result) : reject(new Error(error))
         }
       )
@@ -189,6 +192,7 @@ module.exports = {
       connection.query(
         'SELECT * FROM order_cart JOIN user ON order_cart.user_id = user.user_id WHERE hide_status = 0',
         (error, result) => {
+          console.log(error)
           !error ? resolve(result) : reject(new Error(error))
         }
       )

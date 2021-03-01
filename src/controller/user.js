@@ -58,8 +58,8 @@ module.exports = {
             port: 587,
             secure: false,
             auth: {
-              user: 'mokifoodbeverage@gmail.com',
-              pass: '1103154246moki>'
+              user: `${process.env.EMAIL_SENDER}`,
+              pass: `${process.env.PASS_EMAIL_SENDER}`
             }
           })
 
@@ -244,8 +244,8 @@ module.exports = {
           port: 587,
           secure: false,
           auth: {
-            user: 'mokifoodbeverage@gmail.com',
-            pass: '1103154246moki>'
+            user: `${process.env.EMAIL_SENDER}`,
+            pass: `${process.env.PASS_EMAIL_SENDER}`
           }
         })
 

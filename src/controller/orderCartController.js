@@ -98,7 +98,7 @@ module.exports = {
         }
         return helper.response(res, 200, 'Get Success', result)
       } else {
-        return helper.response(res, 404, `No Data`)
+        return helper.response(res, 200, `No Data`, result)
       }
     } catch (error) {
       console.log(error)
@@ -193,7 +193,8 @@ module.exports = {
         }
       }
       return helper.response(res, 200, 'Success Get Revenue Per Month', result)
-    } catch {
+    } catch (error) {
+      console.log(error)
       return helper.response(res, 400, 'Bad Request', error)
     }
   },
@@ -231,7 +232,7 @@ module.exports = {
         }
         return helper.response(res, 200, 'Success Get Data', result)
       } else {
-        return helper.response(res, 404, `No Data`)
+        return helper.response(res, 200, `No Data`, result)
       }
     } catch (error) {
       return helper.response(res, 400, 'Bad Request', error)
