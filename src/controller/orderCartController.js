@@ -43,12 +43,13 @@ module.exports = {
             result
           )
         } else {
-          return helper.response(res, 400, 'No Order')
+          return helper.response(res, 200, 'No Order')
         }
       } else {
-        return helper.response(res, 400, 'INVOICE HAS BEEN USED')
+        return helper.response(res, 200, 'INVOICE HAS BEEN USED')
       }
-    } catch {
+    } catch (error) {
+      console.log(error)
       return helper.response(res, 400, 'Bad Request', error)
     }
   },

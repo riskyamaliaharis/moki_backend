@@ -222,6 +222,7 @@ module.exports = {
           throw err
         } else console.log('Uploading image is canceled')
       })
+      console.log(error)
       return helper.response(response, 400, 'Bad Request', error)
     }
   },
